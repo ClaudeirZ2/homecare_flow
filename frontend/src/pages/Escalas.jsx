@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import ModalConfirmacao from '../components/ui/ModalConfirmacao';
@@ -90,14 +91,15 @@ export default function Escalas() {
         titulo="Escalas"
         subtitulo={ehGestao ? 'Planeje quem atende quem, em qual dia e turno.' : 'Suas escalas de atendimento.'}
       >
-        {ehGestao && <Button onClick={abrirNovo}>+ Nova escala</Button>}
+        {ehGestao && <Button icone={Plus} onClick={abrirNovo}>Nova escala</Button>}
       </PageHeader>
 
       <FiltroEscalas filtros={filtros} onChange={setFiltros} />
 
-      {carregando
-        ? <p className="texto-suave">Carregando...</p>
-        : <TabelaEscalas escalas={escalas} podeEditar={ehGestao} onEditar={abrirEdicao} onExcluir={setEscalaExcluindo} />}
+      <TabelaEscalas
+        escalas={escalas} carregando={carregando} podeEditar={ehGestao}
+        onEditar={abrirEdicao} onExcluir={setEscalaExcluindo}
+      />
 
       <Modal aberto={modalForm} titulo={escalaEditando ? 'Editar escala' : 'Nova escala'} onFechar={() => setModalForm(false)}>
         <FormularioEscala

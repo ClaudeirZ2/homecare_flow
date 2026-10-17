@@ -1,25 +1,31 @@
-// Tabela genérica: recebe colunas [{ chave, titulo, render? }] e dados
-export default function Table({ colunas, dados, vazio = 'Nenhum registro encontrado.' }) {
+import { Inbox } from 'lucide-react';
+
+// Tabela genérica: recebe colunas [{ chave, titulo, render?, alinhar? }] e dados
+export default function Table({ colunas, dados, vazio = 'Nenhum registro encontrado.', carregando }) {
   return (
-    <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-card)', overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="tabela-wrap">
+      <table className="tabela">
         <thead>
           <tr>
             {colunas.map((c) => (
-              <th key={c.chave} style={{ textAlign: 'left', padding: '12px 16px', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
-                {c.titulo}
-              </th>
+              <th key={c.chave} style={c.alinhar ? { textAlign: c.alinhar } : undefined}>{c.titulo}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {dados.length === 0 && (
-            <tr><td colSpan={colunas.length} style={{ padding: 24, textAlign: 'center', color: 'var(--color-text-muted)' }}>{vazio}</td></tr>
+          {(carregando || dados.length === 0) && (
+            <tr>
+              <td colSpan={colunas.length}>
+                <div className="vazio">
+                  {carregando ? 'Carregando...' : <><Inbox size={28} /><strong>{vazio}</strong></>}
+                </div>
+              </td>
+            </tr>
           )}
-          {dados.map((linha, i) => (
+          {!carregando && dados.map((linha, i) => (
             <tr key={linha.id ?? i}>
               {colunas.map((c) => (
-                <td key={c.chave} style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>
+                <td key={c.chave} style={c.alinhar ? { textAlign: c.alinhar } : undefined}>
                   {c.render ? c.render(linha) : linha[c.chave]}
                 </td>
               ))}

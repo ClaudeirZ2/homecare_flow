@@ -11,6 +11,13 @@ function coordenadasValidas(lat, lng) {
   );
 }
 
+// Data local de hoje 'AAAA-MM-DD' (mesmo formato das colunas DATE)
+function hojeLocal() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 // Técnico só pode operar plantões/escalas que são dele
 function pertenceAoUsuario(req, profissional_id) {
   return !ehTecnico(req) || profissional_id === req.usuario.profissional_id;
@@ -44,6 +51,9 @@ const PlantaoController = {
       }
       if (escala.plantao_id || escala.status !== 'agendado') {
         return res.status(409).json({ erro: 'Esta escala já teve check-in ou não está mais agendada.' });
+      }
+      if (escala.data_prevista > hojeLocal()) {
+        return res.status(409).json({ erro: 'O check-in só é liberado no dia da escala.' });
       }
 
       if (metodo === 'gps' && !coordenadasValidas(lat, lng)) {

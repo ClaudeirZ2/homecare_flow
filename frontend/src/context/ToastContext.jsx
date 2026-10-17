@@ -13,7 +13,7 @@ export function ToastProvider({ children }) {
 
   const mostrar = useCallback((mensagem, tipo) => {
     const id = Date.now() + Math.random();
-    setToasts((lista) => [...lista, { id, mensagem, tipo }]);
+    setToasts((lista) => [...lista, { id, mensagem, tipo }].slice(-3)); // no máximo 3 avisos na tela
     setTimeout(() => remover(id), 4000);
   }, [remover]);
 

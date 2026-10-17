@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { MapPin } from 'lucide-react';
 import Button from '../ui/Button';
 
 // Captura a localização GPS do navegador e dispara o check-in/check-out
-export default function BotaoCheckin({ rotulo = 'Check-in GPS', onLocalizado, onErro, variant = 'primary' }) {
+export default function BotaoCheckin({ rotulo = 'Check-in GPS', onLocalizado, onErro, variant = 'primary', icone = MapPin }) {
   const [localizando, setLocalizando] = useState(false);
 
   function capturar() {
@@ -27,5 +28,5 @@ export default function BotaoCheckin({ rotulo = 'Check-in GPS', onLocalizado, on
     );
   }
 
-  return <Button size="sm" variant={variant} onClick={capturar} carregando={localizando}>📍 {rotulo}</Button>;
+  return <Button size="sm" variant={variant} icone={icone} onClick={capturar} carregando={localizando}>{rotulo}</Button>;
 }

@@ -16,6 +16,12 @@ export function formatarMoeda(valor) {
   return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// 42.5 -> '42,5 h'
+export function formatarHoras(valor) {
+  if (valor === null || valor === undefined) return '—';
+  return `${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} h`;
+}
+
 // Data local de hoje no formato 'AAAA-MM-DD' (toISOString usaria UTC e erraria à noite)
 export function hojeISO() {
   const d = new Date();

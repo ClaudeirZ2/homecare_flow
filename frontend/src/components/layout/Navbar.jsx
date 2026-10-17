@@ -1,22 +1,33 @@
+import { LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Button from '../ui/Button';
 import Logo from './Logo';
 import { rotulo } from '../../utils/formatters';
+
+// Iniciais do nome para o avatar (ex.: "Ana Souza" -> "AS")
+const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 export default function Navbar({ onAlternarMenu }) {
   const { usuario, logout } = useAuth();
 
   return (
     <header className="navbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button type="button" className="menu-toggle" onClick={onAlternarMenu} aria-label="Abrir menu">☰</button>
+      <div className="navbar-esquerda">
+        <button type="button" className="menu-toggle" onClick={onAlternarMenu} aria-label="Abrir menu">
+          <Menu size={20} />
+        </button>
         <Logo />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span className="navbar-usuario">
-          {usuario?.nome} <small>· {rotulo(usuario?.tipo)}</small>
-        </span>
-        <Button variant="ghost" size="sm" onClick={logout}>Sair</Button>
+      <div className="navbar-direita">
+        <div className="usuario-chip">
+          <span className="avatar" aria-hidden="true">{iniciais(usuario?.nome)}</span>
+          <div className="usuario-info">
+            <strong>{usuario?.nome}</strong>
+            <span>{rotulo(usuario?.tipo)}</span>
+          </div>
+        </div>
+        <button type="button" className="btn-sair" onClick={logout} aria-label="Sair">
+          <LogOut size={16} /> <span>Sair</span>
+        </button>
       </div>
     </header>
   );

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Download } from 'lucide-react';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import PageHeader from '../components/ui/PageHeader';
@@ -57,10 +58,10 @@ export default function Financeiro() {
   return (
     <>
       <PageHeader titulo="Relatórios Financeiros" subtitulo="Fechamento mensal calculado a partir das horas reais de check-in/check-out.">
-        <Button variant="outline" onClick={exportar} disabled={!relatorio.length}>⬇ Exportar CSV</Button>
+        <Button variant="outline" icone={Download} onClick={exportar} disabled={!relatorio.length}>Exportar CSV</Button>
       </PageHeader>
 
-      <div className="filtros">
+      <div className="barra-filtros">
         <Input label="Mês de referência" type="month" name="mes" value={mes} onChange={(e) => setMes(e.target.value)} />
       </div>
 
@@ -76,6 +77,7 @@ export default function Financeiro() {
         titulo="Confirmar pagamento"
         mensagem={`Registrar o pagamento de ${formatarMoeda(pagando?.valor_total)} para ${pagando?.profissional_nome}?`}
         textoConfirmar="Confirmar pagamento"
+        tipo="neutro"
         onConfirmar={confirmarPagamento}
         onCancelar={() => setPagando(null)}
       />

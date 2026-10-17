@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { CalendarClock, LogOut, QrCode } from 'lucide-react';
 import Table from '../components/ui/Table';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
@@ -11,7 +12,7 @@ import { plantaoService } from '../services/plantaoService';
 import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { formatarData, rotulo } from '../utils/formatters';
+import { formatarData, hojeISO, rotulo } from '../utils/formatters';
 
 // Check-in / check-out dos plantões. O técnico vê só as próprias escalas (filtro feito na API).
 export default function Plantoes() {
@@ -64,22 +65,36 @@ export default function Plantoes() {
     executar(() => plantaoService.checkout(escala.plantao_id, coords), 'Check-out registrado. Bom descanso!');
 
   const colunas = [
-    { chave: 'data_prevista', titulo: 'Data', render: (e) => formatarData(e.data_prevista) },
-    { chave: 'paciente_nome', titulo: 'Paciente' },
+    { chave: 'data_prevista', titulo: 'Data', render: (e) => <span className="numero">{formatarData(e.data_prevista)}</span> },
+    {
+      chave: 'paciente_nome', titulo: 'Paciente',
+      render: (e) => (
+        <>
+          <span className="celula-principal">{e.paciente_nome}</span>
+          {e.paciente_endereco && <span className="celula-sub">{e.paciente_endereco}</span>}
+        </>
+      ),
+    },
     ...(ehGestao ? [{ chave: 'profissional_nome', titulo: 'Profissional' }] : []),
     { chave: 'turno', titulo: 'Turno', render: (e) => rotulo(e.turno) },
     { chave: 'status', titulo: 'Status', render: (e) => <Badge status={e.status} /> },
     {
       chave: 'acao', titulo: 'Ação',
-      render: (e) => (e.status === 'em_andamento' && e.plantao_id
-        ? <BotaoCheckin rotulo="Check-out" variant="secondary" onLocalizado={(c) => checkout(e, c)}
+      render: (e) => {
+        // Check-in só é liberado no dia da escala (a API também valida)
+        if (e.status === 'agendado' && e.data_prevista > hojeISO()) {
+          return <span className="info-linha"><CalendarClock size={14} /> Liberado em {formatarData(e.data_prevista)}</span>;
+        }
+        return (e.status === 'em_andamento' && e.plantao_id
+        ? <BotaoCheckin rotulo="Check-out" variant="secondary" icone={LogOut} onLocalizado={(c) => checkout(e, c)}
             onErro={() => checkout(e, {})} />
         : (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className="acoes" style={{ gap: 8, flexWrap: 'wrap' }}>
             <BotaoCheckin onLocalizado={(c) => checkinGps(e, c)} onErro={toast.erro} />
-            <Button size="sm" variant="outline" onClick={() => setEscalaQr(e)}>▣ QR Code</Button>
+            <Button size="sm" variant="outline" icone={QrCode} onClick={() => setEscalaQr(e)}>QR Code</Button>
           </div>
-        )),
+        ));
+      },
     },
   ];
 
@@ -87,10 +102,10 @@ export default function Plantoes() {
     <>
       <PageHeader titulo="Plantões" subtitulo="Registre a chegada e a saída com GPS ou QR Code da residência." />
 
-      <h3 className="secao-titulo">Escalas para check-in / check-out</h3>
+      <h2 className="secao-titulo" style={{ marginTop: 0 }}>Escalas para check-in / check-out</h2>
       <Table colunas={colunas} dados={pendentes} vazio="Nenhuma escala pendente." />
 
-      <h3 className="secao-titulo">Histórico de plantões</h3>
+      <h2 className="secao-titulo">Histórico de plantões</h2>
       <TabelaHistoricoPlantoes plantoes={historico} mostrarProfissional={ehGestao} />
 
       <ModalCheckinQr escala={escalaQr} salvando={salvando} onConfirmar={checkinQr} onFechar={() => setEscalaQr(null)} />

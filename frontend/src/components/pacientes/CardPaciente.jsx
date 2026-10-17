@@ -1,26 +1,36 @@
-import Card from '../ui/Card';
+import { MapPin, Phone, QrCode, Pencil, Trash2 } from 'lucide-react';
 import Button from '../ui/Button';
+
+const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 // Card com os dados principais do paciente e ações de edição/exclusão
 export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir }) {
   return (
-    <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-        <h3 style={{ color: 'var(--color-primary-dark)' }}>{paciente.nome}</h3>
-        <span className="texto-suave">{paciente.idade ? `${paciente.idade} anos` : '—'}</span>
-      </div>
-      <p className="texto-suave" style={{ marginTop: 6 }}>📍 {paciente.endereco || 'Endereço não informado'}</p>
-      <p className="texto-suave">📞 {paciente.responsavel_contato || 'Sem responsável cadastrado'}</p>
-      <p style={{ fontSize: 'var(--font-size-sm)', marginTop: 6 }}>
-        QR Code da residência: <code>{paciente.qr_code_id}</code>
-      </p>
-
-      {podeEditar && (
-        <div style={{ display: 'flex', gap: 8, marginTop: 'var(--space-md)' }}>
-          <Button size="sm" variant="outline" onClick={() => onEditar(paciente)}>Editar</Button>
-          <Button size="sm" variant="danger" onClick={() => onExcluir(paciente)}>Excluir</Button>
+    <article className="card paciente-card">
+      <div className="paciente-topo">
+        <span className="paciente-avatar">{iniciais(paciente.nome)}</span>
+        <div>
+          <h3 className="paciente-nome">{paciente.nome}</h3>
+          <span className="texto-suave">{paciente.idade ? `${paciente.idade} anos` : 'Idade não informada'}</span>
         </div>
-      )}
-    </Card>
+      </div>
+
+      <div style={{ display: 'grid', gap: 6 }}>
+        <p className="info-linha"><MapPin size={14} /> {paciente.endereco || 'Endereço não informado'}</p>
+        <p className="info-linha"><Phone size={14} /> {paciente.responsavel_contato || 'Sem responsável cadastrado'}</p>
+      </div>
+
+      <div className="card-rodape">
+        <span className="info-linha" title="Código do QR Code fixado na residência">
+          <QrCode size={14} /> <code>{paciente.qr_code_id}</code>
+        </span>
+        {podeEditar && (
+          <div className="acoes">
+            <Button size="sm" variant="ghost" icone={Pencil} titulo="Editar" onClick={() => onEditar(paciente)} />
+            <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(paciente)} />
+          </div>
+        )}
+      </div>
+    </article>
   );
 }

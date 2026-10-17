@@ -51,3 +51,37 @@ INSERT INTO prontuarios (plantao_id, pressao_arterial, frequencia_cardiaca, temp
 (1, '12/8',  72, 36.4, 97, 'Losartana 50mg às 08h', NULL, 'Paciente tranquilo, aceitou bem a alimentação.'),
 (2, '13/8',  80, 36.8, 95, 'Insulina NPH 10UI às 22h', 'Leve agitação noturna às 02h, controlada.', 'Dormiu bem após as 03h.'),
 (3, '11/7',  68, 36.2, 98, NULL, NULL, 'Caminhada leve no quintal acompanhada.');
+
+-- ------------------------------------------------------------
+-- Histórico dos últimos 3 a 10 dias (deixa o painel e o financeiro com dados)
+-- A combinação (dia + profissional) varia a quantidade de escalas por dia.
+-- ------------------------------------------------------------
+INSERT INTO escalas (profissional_id, paciente_id, data_prevista, turno, status)
+SELECT eq.profissional_id, eq.paciente_id, DATE_SUB(CURDATE(), INTERVAL d.n DAY), eq.turno, 'concluido'
+FROM (SELECT 3 AS n UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+      UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) d
+CROSS JOIN (SELECT 1 AS profissional_id, 1 AS paciente_id, 'manha' AS turno
+            UNION ALL SELECT 2, 2, 'noite'
+            UNION ALL SELECT 3, 3, 'tarde') eq
+WHERE (d.n + eq.profissional_id) % 4 <> 0;
+
+-- Um plantão finalizado para cada escala concluída que ainda não tem plantão
+INSERT INTO plantoes (escala_id, profissional_id, paciente_id, checkin_hora, checkin_lat, checkin_lng, checkin_metodo,
+                      checkout_hora, checkout_lat, checkout_lng, status)
+SELECT e.id, e.profissional_id, e.paciente_id,
+       TIMESTAMP(e.data_prevista, CASE e.turno WHEN 'manha' THEN '07:00:00' WHEN 'tarde' THEN '13:00:00' ELSE '19:00:00' END),
+       -16.4700, -54.6360, IF(e.id % 2 = 0, 'qrcode', 'gps'),
+       TIMESTAMPADD(MINUTE, IF(e.turno = 'noite', 720, 360) + (e.id % 4) * 5,
+                    TIMESTAMP(e.data_prevista, CASE e.turno WHEN 'manha' THEN '07:00:00' WHEN 'tarde' THEN '13:00:00' ELSE '19:00:00' END)),
+       -16.4700, -54.6360, 'finalizado'
+FROM escalas e
+LEFT JOIN plantoes pl ON pl.escala_id = e.id
+WHERE e.status = 'concluido' AND pl.id IS NULL;
+
+-- Prontuário padrão para os plantões do histórico
+INSERT INTO prontuarios (plantao_id, pressao_arterial, frequencia_cardiaca, temperatura, saturacao_oxigenio, observacoes)
+SELECT pl.id, ELT(1 + pl.id % 3, '12/8', '13/8', '11/7'), 66 + pl.id % 14, 36.0 + (pl.id % 7) / 10, 95 + pl.id % 4,
+       'Plantão sem intercorrências. Paciente estável.'
+FROM plantoes pl
+LEFT JOIN prontuarios pr ON pr.plantao_id = pl.id
+WHERE pl.status = 'finalizado' AND pr.id IS NULL;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import ModalConfirmacao from '../components/ui/ModalConfirmacao';
@@ -70,18 +71,14 @@ export default function Profissionais() {
   return (
     <>
       <PageHeader titulo="Cuidadores" subtitulo="Técnicos e cuidadores que realizam os plantões.">
-        {ehGestao && <Button onClick={() => { setEditando(null); setModalForm(true); }}>+ Novo profissional</Button>}
+        {ehGestao && <Button icone={Plus} onClick={() => { setEditando(null); setModalForm(true); }}>Novo profissional</Button>}
       </PageHeader>
 
-      {carregando
-        ? <p className="texto-suave">Carregando...</p>
-        : (
-          <TabelaProfissionais
-            profissionais={lista} podeEditar={ehGestao}
-            onEditar={(p) => { setEditando(p); setModalForm(true); }}
-            onExcluir={setExcluindo}
-          />
-        )}
+      <TabelaProfissionais
+        profissionais={lista} carregando={carregando} podeEditar={ehGestao}
+        onEditar={(p) => { setEditando(p); setModalForm(true); }}
+        onExcluir={setExcluindo}
+      />
 
       <Modal aberto={modalForm} titulo={editando ? 'Editar profissional' : 'Novo profissional'} onFechar={() => setModalForm(false)}>
         <FormularioProfissional profissional={editando} salvando={salvando} onSalvar={salvar} onCancelar={() => setModalForm(false)} />

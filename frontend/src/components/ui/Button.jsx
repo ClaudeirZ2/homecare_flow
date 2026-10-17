@@ -1,39 +1,27 @@
-// Botão estilizado e reutilizável com variantes (primary, secondary, outline, danger, ghost)
+// Botão reutilizável. Variantes: primary, secondary, outline, danger, ghost, ghost-danger.
+// "icone" recebe um componente do lucide-react (ex.: icone={Plus}).
 export default function Button({
-  children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, carregando, style,
+  children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, carregando,
+  icone: Icone, bloco, titulo,
 }) {
-  const estilos = {
-    primary: { background: 'var(--color-accent-gradient)', color: '#fff' },
-    secondary: { background: 'var(--color-primary-dark)', color: '#fff' },
-    outline: { background: 'transparent', color: 'var(--color-primary-dark)', border: '1px solid var(--color-border)' },
-    danger: { background: 'var(--color-danger)', color: '#fff' },
-    ghost: { background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)' },
-  };
-  const tamanhos = {
-    sm: { padding: '6px 12px' },
-    md: { padding: '10px 18px' },
-  };
-  const bloqueado = disabled || carregando;
+  const classes = [
+    'btn',
+    `btn-${variant}`,
+    size === 'sm' && 'btn-sm',
+    bloco && 'btn-bloco',
+  ].filter(Boolean).join(' ');
 
   return (
     <button
       type={type}
       onClick={onClick}
-      disabled={bloqueado}
-      style={{
-        ...estilos[variant],
-        ...tamanhos[size],
-        borderRadius: 'var(--radius-sm)',
-        fontWeight: 600,
-        fontSize: 'var(--font-size-sm)',
-        opacity: bloqueado ? 0.6 : 1,
-        cursor: bloqueado ? 'not-allowed' : 'pointer',
-        transition: 'opacity 0.2s',
-        whiteSpace: 'nowrap',
-        ...style,
-      }}
+      disabled={disabled || carregando}
+      className={classes}
+      title={titulo}
+      aria-label={!children ? titulo : undefined}
     >
-      {carregando ? 'Aguarde...' : children}
+      {carregando ? <span className="spinner" aria-hidden="true" /> : Icone && <Icone size={size === 'sm' ? 14 : 16} strokeWidth={2} />}
+      {children}
     </button>
   );
 }

@@ -1,28 +1,37 @@
+import { Pencil, Trash2 } from 'lucide-react';
 import Table from '../ui/Table';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { formatarMoeda } from '../../utils/formatters';
 
-export default function TabelaProfissionais({ profissionais, podeEditar, onEditar, onExcluir }) {
+export default function TabelaProfissionais({ profissionais, carregando, podeEditar, onEditar, onExcluir }) {
   const colunas = [
-    { chave: 'nome', titulo: 'Nome' },
+    {
+      chave: 'nome', titulo: 'Profissional',
+      render: (p) => (
+        <>
+          <span className="celula-principal">{p.nome}</span>
+          <span className="celula-sub">{p.email}</span>
+        </>
+      ),
+    },
     { chave: 'especialidade', titulo: 'Especialidade', render: (p) => p.especialidade || '—' },
     { chave: 'telefone', titulo: 'Telefone', render: (p) => p.telefone || '—' },
-    { chave: 'valor_hora', titulo: 'Valor/hora', render: (p) => formatarMoeda(p.valor_hora) },
-    { chave: 'status_disponibilidade', titulo: 'Status', render: (p) => <Badge status={p.status_disponibilidade} /> },
+    { chave: 'valor_hora', titulo: 'Valor/hora', alinhar: 'right', render: (p) => <span className="numero">{formatarMoeda(p.valor_hora)}</span> },
+    { chave: 'status_disponibilidade', titulo: 'Disponibilidade', render: (p) => <Badge status={p.status_disponibilidade} /> },
   ];
 
   if (podeEditar) {
     colunas.push({
-      chave: 'acoes', titulo: 'Ações',
+      chave: 'acoes', titulo: 'Ações', alinhar: 'right',
       render: (p) => (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button size="sm" variant="outline" onClick={() => onEditar(p)}>Editar</Button>
-          <Button size="sm" variant="danger" onClick={() => onExcluir(p)}>Excluir</Button>
+        <div className="acoes" style={{ justifyContent: 'flex-end' }}>
+          <Button size="sm" variant="ghost" icone={Pencil} titulo="Editar" onClick={() => onEditar(p)} />
+          <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(p)} />
         </div>
       ),
     });
   }
 
-  return <Table colunas={colunas} dados={profissionais} vazio="Nenhum profissional cadastrado." />;
+  return <Table colunas={colunas} dados={profissionais} carregando={carregando} vazio="Nenhum profissional cadastrado." />;
 }

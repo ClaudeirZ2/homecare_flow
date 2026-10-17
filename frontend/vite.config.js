@@ -6,4 +6,15 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Separa bibliotecas grandes em arquivos próprios (melhor cache e carregamento)
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          graficos: ['recharts'],
+        },
+      },
+    },
+  },
 });

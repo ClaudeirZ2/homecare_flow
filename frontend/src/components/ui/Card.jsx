@@ -1,23 +1,16 @@
-// Card genérico usado em dashboards e listagens
-export default function Card({ title, value, icon, children }) {
+// Card de indicador (KPI): rótulo, valor, dica opcional e ícone do lucide-react
+export default function Card({ title, value, icon: Icone, dica, children }) {
   return (
-    <div
-      style={{
-        background: 'var(--color-surface)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-card)',
-        padding: 'var(--space-md)',
-      }}
-    >
-      {title && (
-        <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
-          {icon} {title}
-        </p>
-      )}
-      {value !== undefined && (
-        <p style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
-          {value}
-        </p>
+    <div className="card">
+      {title !== undefined && (
+        <div className="stat">
+          <div>
+            <p className="stat-rotulo">{title}</p>
+            {value !== undefined && <p className="stat-valor numero">{value}</p>}
+            {dica && <p className="stat-dica">{dica}</p>}
+          </div>
+          {Icone && <span className="stat-icone"><Icone size={18} strokeWidth={2} /></span>}
+        </div>
       )}
       {children}
     </div>

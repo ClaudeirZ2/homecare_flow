@@ -1,33 +1,57 @@
 import { NavLink } from 'react-router-dom';
+import {
+  LayoutDashboard, Users, UserRound, CalendarDays, Clock, ClipboardList, Wallet,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-// "somenteGestao": item visível apenas para admin/gestor
-export const ITENS_MENU = [
-  { para: '/', rotulo: 'Visão Geral', icone: '🏠' },
-  { para: '/pacientes', rotulo: 'Pacientes', icone: '👥' },
-  { para: '/profissionais', rotulo: 'Cuidadores', icone: '🩺' },
-  { para: '/escalas', rotulo: 'Escalas', icone: '📅' },
-  { para: '/plantoes', rotulo: 'Plantões', icone: '⏱️' },
-  { para: '/prontuarios', rotulo: 'Prontuários', icone: '📋' },
-  { para: '/financeiro', rotulo: 'Relatórios', icone: '💰', somenteGestao: true },
+// Menu agrupado por seção. "somenteGestao": visível apenas para admin/gestor.
+const SECOES = [
+  {
+    titulo: 'Geral',
+    itens: [{ para: '/', rotulo: 'Visão Geral', icone: LayoutDashboard }],
+  },
+  {
+    titulo: 'Cadastros',
+    itens: [
+      { para: '/pacientes', rotulo: 'Pacientes', icone: Users },
+      { para: '/profissionais', rotulo: 'Cuidadores', icone: UserRound },
+    ],
+  },
+  {
+    titulo: 'Operação',
+    itens: [
+      { para: '/escalas', rotulo: 'Escalas', icone: CalendarDays },
+      { para: '/plantoes', rotulo: 'Plantões', icone: Clock },
+      { para: '/prontuarios', rotulo: 'Prontuários', icone: ClipboardList },
+    ],
+  },
+  {
+    titulo: 'Gestão',
+    somenteGestao: true,
+    itens: [{ para: '/financeiro', rotulo: 'Relatórios', icone: Wallet }],
+  },
 ];
 
 export default function Sidebar({ aberta, onNavegar }) {
   const { ehGestao } = useAuth();
-  const itens = ITENS_MENU.filter((item) => !item.somenteGestao || ehGestao);
 
   return (
-    <nav className={`sidebar ${aberta ? 'sidebar-aberta' : ''}`}>
-      {itens.map((item) => (
-        <NavLink
-          key={item.para}
-          to={item.para}
-          end={item.para === '/'}
-          onClick={onNavegar}
-          className={({ isActive }) => `sidebar-link ${isActive ? 'ativo' : ''}`}
-        >
-          <span aria-hidden="true">{item.icone}</span> {item.rotulo}
-        </NavLink>
+    <nav className={`sidebar ${aberta ? 'sidebar-aberta' : ''}`} aria-label="Menu principal">
+      {SECOES.filter((s) => !s.somenteGestao || ehGestao).map((secao) => (
+        <div key={secao.titulo}>
+          <p className="sidebar-secao">{secao.titulo}</p>
+          {secao.itens.map(({ para, rotulo, icone: Icone }) => (
+            <NavLink
+              key={para}
+              to={para}
+              end={para === '/'}
+              onClick={onNavegar}
+              className={({ isActive }) => `sidebar-link ${isActive ? 'ativo' : ''}`}
+            >
+              <Icone size={18} strokeWidth={1.9} /> {rotulo}
+            </NavLink>
+          ))}
+        </div>
       ))}
     </nav>
   );

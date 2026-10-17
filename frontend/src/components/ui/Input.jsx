@@ -1,14 +1,9 @@
 // Campo de formulário reutilizável (input, select ou textarea)
 export default function Input({
   label, name, value, onChange, type = 'text', options, required, rows,
-  placeholder, min, max, step, disabled, ajuda, textoVazio = 'Selecione...',
+  placeholder, min, max, step, disabled, ajuda, textoVazio = 'Selecione...', icone: Icone,
 }) {
-  const base = {
-    width: '100%', padding: '10px 12px', border: '1px solid var(--color-border)',
-    borderRadius: 'var(--radius-sm)', fontFamily: 'inherit', fontSize: 'var(--font-size-base)',
-    background: disabled ? 'var(--color-bg)' : 'var(--color-surface)',
-  };
-  const comuns = { name, value: value ?? '', onChange, required, disabled, style: base };
+  const comuns = { name, value: value ?? '', onChange, required, disabled, className: 'campo-controle' };
 
   let campo;
   if (options) {
@@ -25,12 +20,12 @@ export default function Input({
   }
 
   return (
-    <label style={{ display: 'block', marginBottom: 'var(--space-md)' }}>
-      <span style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 600, marginBottom: 4 }}>
-        {label}{required && <span style={{ color: 'var(--color-danger)' }}> *</span>}
+    <label className="campo">
+      <span className="campo-rotulo">
+        {label}{required && <span className="obrigatorio" aria-hidden="true">*</span>}
       </span>
-      {campo}
-      {ajuda && <small style={{ color: 'var(--color-text-muted)' }}>{ajuda}</small>}
+      {Icone ? <span className="campo-busca"><Icone size={16} />{campo}</span> : campo}
+      {ajuda && <small className="campo-ajuda">{ajuda}</small>}
     </label>
   );
 }

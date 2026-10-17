@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Plus, Search, Users } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import ModalConfirmacao from '../components/ui/ModalConfirmacao';
 import PageHeader from '../components/ui/PageHeader';
 import Input from '../components/ui/Input';
+import EstadoVazio from '../components/ui/EstadoVazio';
 import CardPaciente from '../components/pacientes/CardPaciente';
 import FormularioPaciente from '../components/pacientes/FormularioPaciente';
 import { pacienteService } from '../services/pacienteService';
@@ -73,18 +75,21 @@ export default function Pacientes() {
 
   return (
     <>
-      <PageHeader titulo="Pacientes" subtitulo="Pessoas atendidas em domicílio.">
-        {ehGestao && <Button onClick={() => { setEditando(null); setModalForm(true); }}>+ Novo paciente</Button>}
+      <PageHeader titulo="Pacientes" subtitulo={`${pacientes.length} pacientes ativos em atendimento domiciliar.`}>
+        {ehGestao && <Button icone={Plus} onClick={() => { setEditando(null); setModalForm(true); }}>Novo paciente</Button>}
       </PageHeader>
 
-      <div className="filtros">
-        <Input label="Buscar por nome" name="busca" value={busca} onChange={(e) => setBusca(e.target.value)} />
+      <div className="barra-filtros">
+        <Input label="Buscar por nome" name="busca" value={busca} onChange={(e) => setBusca(e.target.value)}
+          icone={Search} placeholder="Digite o nome do paciente" />
       </div>
 
       {carregando && <p className="texto-suave">Carregando...</p>}
-      {!carregando && filtrados.length === 0 && <p className="texto-suave">Nenhum paciente encontrado.</p>}
+      {!carregando && filtrados.length === 0 && (
+        <EstadoVazio icone={Users} titulo="Nenhum paciente encontrado" descricao="Ajuste a busca ou cadastre um novo paciente." />
+      )}
 
-      <div className="grid-cards">
+      <div className="grid-pacientes">
         {filtrados.map((p) => (
           <CardPaciente
             key={p.id} paciente={p} podeEditar={ehGestao}

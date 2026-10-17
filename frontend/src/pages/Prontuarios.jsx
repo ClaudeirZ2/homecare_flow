@@ -56,7 +56,7 @@ export default function Prontuarios() {
       <FormularioProntuario plantoes={plantoes} salvando={salvando} onSalvar={salvar} />
 
       <h2 className="secao-titulo" style={{ marginTop: 32 }}>Histórico do paciente</h2>
-      <div className="filtros">
+      <div className="barra-filtros">
         <Input label="Paciente" name="paciente" value={pacienteId} onChange={(e) => setPacienteId(e.target.value)}
           options={pacientes.map((p) => ({ value: p.id, label: p.nome }))} />
       </div>
