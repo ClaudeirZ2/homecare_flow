@@ -1,0 +1,31 @@
+import { useState } from 'react';
+import Button from '../ui/Button';
+
+// Captura a localização GPS do navegador e dispara o check-in/check-out
+export default function BotaoCheckin({ rotulo = 'Check-in GPS', onLocalizado, onErro, variant = 'primary' }) {
+  const [localizando, setLocalizando] = useState(false);
+
+  function capturar() {
+    if (!navigator.geolocation) {
+      onErro?.('Geolocalização não suportada neste navegador. Use o QR Code.');
+      return;
+    }
+    setLocalizando(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await onLocalizado({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        } finally {
+          setLocalizando(false);
+        }
+      },
+      () => {
+        setLocalizando(false);
+        onErro?.('Não foi possível obter sua localização. Verifique a permissão do navegador ou use o QR Code.');
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  }
+
+  return <Button size="sm" variant={variant} onClick={capturar} carregando={localizando}>📍 {rotulo}</Button>;
+}

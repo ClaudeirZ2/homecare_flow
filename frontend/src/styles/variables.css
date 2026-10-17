@@ -1,0 +1,45 @@
+/* ============================================================
+   HOME CARE FLOW — Design Tokens
+   Paleta inspirada na logo: coração azul petróleo + verde-água
+   ============================================================ */
+
+:root {
+  /* Cores principais */
+  --color-primary-dark: #1c2e3e;   /* azul petróleo escuro (header, sidebar) */
+  --color-primary: #2d4a63;
+  --color-accent: #2dbe9e;         /* verde-água da logo */
+  --color-accent-light: #4fd1b5;
+  --color-accent-gradient: linear-gradient(135deg, #2dbe9e 0%, #4fd1b5 100%);
+
+  /* Neutros */
+  --color-bg: #f4f7f9;
+  --color-surface: #ffffff;
+  --color-border: #e2e8ef;
+  --color-text: #1c2e3e;
+  --color-text-muted: #64748b;
+
+  /* Estados */
+  --color-success: #2dbe9e;
+  --color-warning: #e6a23c;
+  --color-danger: #e5484d;
+  --color-info: #4b8bbe;
+
+  /* Tipografia */
+  --font-base: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --font-size-sm: 0.85rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+
+  /* Espaçamento */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  /* Bordas e sombras */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --shadow-card: 0 2px 10px rgba(28, 46, 62, 0.08);
+}
