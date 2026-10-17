@@ -20,11 +20,28 @@ Stack: **MySQL + Node.js (Express) + ReactJS (Vite)**
 
 > **Sobre o tema:** o edital restringe projetos de saúde; este tema foi **autorizado pelos gestores do curso**. O foco da solução é a **gestão do trabalho** dos profissionais (escalas, jornada, pagamento), e não diagnóstico ou tratamento. Pacientes cadastrados devem ter 18 anos ou mais.
 
+### Telas
+
+| Visão Geral | Plantões (técnica) |
+|---|---|
+| ![Dashboard](docs/telas/dashboard.png) | ![Plantões](docs/telas/plantoes.png) |
+| **Escalas (CRUD)** | **Financeiro** |
+| ![Escalas](docs/telas/escalas.png) | ![Financeiro](docs/telas/financeiro.png) |
+
 ## 2. Como rodar
 
 Pré-requisitos: Node.js 18+ e MySQL 8 rodando.
 
-### 1) Backend + banco
+### Jeito rápido (Windows)
+1. Abra `backend/.env` e preencha `DB_PASSWORD` com a senha do seu MySQL.
+2. Dê dois cliques em **`preparar-banco.bat`**. Ele cria o banco com os dados de demonstração.
+3. Dê dois cliques em **`iniciar.bat`**. Ele abre a API e o frontend em duas janelas e abre o navegador em http://localhost:3000.
+
+Para parar o sistema, feche as duas janelas.
+
+### Passo a passo manual
+
+#### 1) Backend + banco
 ```bash
 cd backend
 cp .env.example .env      # preencha DB_PASSWORD e JWT_SECRET
@@ -35,7 +52,7 @@ npm run dev               # API em http://localhost:5000
 > `db:setup` **apaga e recria** o banco `homecare_flow`. Use-o sempre que quiser voltar aos dados de demonstração.
 > Alternativa manual: `mysql -u root -p < ../database/schema.sql` e depois `seed.sql`.
 
-### 2) Frontend
+#### 2) Frontend
 ```bash
 cd frontend
 npm install

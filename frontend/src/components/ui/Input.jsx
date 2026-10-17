@@ -1,7 +1,7 @@
 // Campo de formulário reutilizável (input, select ou textarea)
 export default function Input({
   label, name, value, onChange, type = 'text', options, required, rows,
-  placeholder, min, max, step, disabled, ajuda,
+  placeholder, min, max, step, disabled, ajuda, textoVazio = 'Selecione...',
 }) {
   const base = {
     width: '100%', padding: '10px 12px', border: '1px solid var(--color-border)',
@@ -14,7 +14,7 @@ export default function Input({
   if (options) {
     campo = (
       <select {...comuns}>
-        <option value="">Selecione...</option>
+        <option value="">{textoVazio}</option>
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );

@@ -34,5 +34,10 @@ async function main() {
 
 main().catch((err) => {
   console.error('❌ Falha ao configurar o banco:', err.message);
+  if (err.code === 'ER_ACCESS_DENIED_ERROR') {
+    console.error('👉 Usuário/senha do MySQL recusados. Confira DB_USER e DB_PASSWORD em backend/.env');
+  } else if (err.code === 'ECONNREFUSED') {
+    console.error('👉 MySQL não respondeu. Verifique se o serviço MySQL80 está iniciado e a porta DB_PORT.');
+  }
   process.exit(1);
 });

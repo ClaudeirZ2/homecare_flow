@@ -9,7 +9,7 @@ export default function FiltroEscalas({ filtros, onChange }) {
 
   return (
     <div className="filtros">
-      <Input label="Status" name="status" value={filtros.status} onChange={handleChange}
+      <Input label="Status" name="status" value={filtros.status} onChange={handleChange} textoVazio="Todos"
         options={opcoes('agendado', 'em_andamento', 'concluido', 'cancelado')} />
       <Input label="Data" name="data" type="date" value={filtros.data} onChange={handleChange} />
     </div>
