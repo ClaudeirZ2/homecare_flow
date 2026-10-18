@@ -1,6 +1,7 @@
 const { pool } = require('../config/db');
 
-// SELECT base: escala + nomes do paciente/profissional + plantão vinculado (se houver)
+// Consulta base que eu reaproveito: junta a escala com o nome do paciente, do profissional
+// e o plantão (se já tiver check-in). Uso LEFT JOIN no plantão porque ele pode não existir ainda.
 const SELECT_ESCALA = `
   SELECT e.id, e.data_prevista, e.turno, e.status, e.observacoes, e.criado_em, e.atualizado_em,
          pac.id AS paciente_id, pac.nome AS paciente_nome, pac.endereco AS paciente_endereco,
@@ -13,7 +14,7 @@ const SELECT_ESCALA = `
   LEFT JOIN plantoes pl ON pl.escala_id = e.id`;
 
 const EscalaModel = {
-  // READ (listar; filtros opcionais por profissional, status e data)
+  // READ — lista com filtros opcionais. Monto o WHERE só com os filtros que vieram.
   async listarTodas({ profissional_id, status, data } = {}) {
     const condicoes = [];
     const params = [];
@@ -61,7 +62,7 @@ const EscalaModel = {
     await pool.query('DELETE FROM escalas WHERE id = ?', [id]);
   },
 
-  // Evita escalar o mesmo profissional duas vezes no mesmo dia/turno
+  // Confere se o profissional já está escalado no mesmo dia e turno (para não ter escala duplicada)
   async existeConflito({ profissional_id, data_prevista, turno, ignorarId = 0 }) {
     const [rows] = await pool.query(
       `SELECT id FROM escalas

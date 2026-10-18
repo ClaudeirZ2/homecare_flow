@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-// Modal genérico (usado para formulários e confirmações). Fecha com Esc ou clique no fundo.
+// Janela modal que uso nos formulários e confirmações.
+// Fecha no X, com a tecla Esc ou clicando fora dela.
 export default function Modal({ aberto, titulo, onFechar, children }) {
   useEffect(() => {
     if (!aberto) return undefined;

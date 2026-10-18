@@ -23,7 +23,7 @@ export default function Login() {
   const [erro, setErro] = useState('');
   const [entrando, setEntrando] = useState(false);
 
-  // Já logado? Vai direto para o painel
+  // Se já estiver logado, nem mostro o login: vai direto para o painel
   if (usuario) return <Navigate to="/" replace />;
 
   async function handleSubmit(e) {
@@ -71,7 +71,7 @@ export default function Login() {
             placeholder="••••••" required />
           <Button type="submit" carregando={entrando} bloco>Entrar</Button>
 
-          {import.meta.env.DEV && (
+          {(import.meta.env.DEV || import.meta.env.VITE_MOSTRAR_DEMO === 'true') && (
             <div className="login-demo">
               <strong>Ambiente de demonstração</strong> · senha <code>123456</code><br />
               Gestão: admin@homecareflow.com<br />

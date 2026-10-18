@@ -1,4 +1,4 @@
-// Card de indicador (KPI): rótulo, valor, dica opcional e ícone do lucide-react
+// Card dos indicadores (os números do topo das telas): título, valor, dica e ícone
 export default function Card({ title, value, icon: Icone, dica, children }) {
   return (
     <div className="card">

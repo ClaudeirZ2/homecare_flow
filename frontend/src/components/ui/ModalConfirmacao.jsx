@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import Modal from './Modal';
 import Button from './Button';
 
-// Modal genérico de confirmação. tipo="perigo" (exclusões) ou "neutro" (ex.: pagamentos).
+// Modal de "tem certeza?". tipo="perigo" fica vermelho (exclusão); "neutro" fica verde (ex.: pagamento).
 export default function ModalConfirmacao({
   aberto, titulo = 'Confirmar exclusão', mensagem, textoConfirmar = 'Sim, excluir',
   tipo = 'perigo', carregando, onConfirmar, onCancelar,

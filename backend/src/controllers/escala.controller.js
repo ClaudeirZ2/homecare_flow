@@ -7,7 +7,8 @@ const TURNOS = ['manha', 'tarde', 'noite', '12x36'];
 const STATUS = ['agendado', 'em_andamento', 'concluido', 'cancelado'];
 const DATA_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
-// Valida os dados da escala e confere se paciente/profissional existem e estão ativos
+// Antes de salvar eu confiro os campos e se o paciente e o profissional existem e estão ativos.
+// Retorna a mensagem de erro, ou null quando está tudo certo.
 async function validarEscala(dados) {
   const { profissional_id, paciente_id, data_prevista, turno, status } = dados;
 
@@ -32,7 +33,7 @@ async function validarEscala(dados) {
 
 const EscalaController = {
   // GET /api/escalas?status=agendado&data=2026-10-16
-  // Técnicos enxergam apenas as próprias escalas.
+  // Se quem pediu for técnico, filtro só as escalas dele.
   async listar(req, res, next) {
     try {
       const filtros = { status: req.query.status, data: req.query.data };
@@ -81,7 +82,7 @@ const EscalaController = {
     }
   },
 
-  // PUT /api/escalas/:id — campos não enviados mantêm o valor atual
+  // PUT /api/escalas/:id — o que não vier no corpo continua com o valor que já estava salvo
   async atualizar(req, res, next) {
     try {
       const existente = await EscalaModel.buscarPorId(req.params.id);
@@ -115,7 +116,8 @@ const EscalaController = {
       const existente = await EscalaModel.buscarPorId(req.params.id);
       if (!existente) return res.status(404).json({ erro: 'Escala não encontrada.' });
 
-      // Escalas já executadas guardam plantão e prontuário: não podem ser apagadas
+      // Se a escala já virou plantão, ela tem prontuário e horas ligadas a ela.
+      // Apagar faria perder esse histórico, então nesse caso só deixo cancelar.
       if (existente.plantao_id) {
         return res.status(409).json({
           erro: 'Esta escala já possui plantão registrado. Use o status "cancelado" em vez de excluir.',

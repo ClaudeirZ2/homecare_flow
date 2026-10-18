@@ -7,7 +7,7 @@ import { hojeISO } from '../../utils/formatters';
 const COR_ESCALAS = '#4b7fa8'; // azul da logo
 const COR_PLANTOES = '#1fa88a'; // verde-água da logo
 
-// Soma dias a uma data 'AAAA-MM-DD' sem passar por UTC
+// Soma (ou subtrai) dias de uma data 'AAAA-MM-DD' usando o horário local, sem UTC
 function somarDias(iso, dias) {
   const [a, m, d] = iso.split('-').map(Number);
   const data = new Date(a, m - 1, d + dias);
@@ -27,7 +27,8 @@ function TooltipGrafico({ active, payload, label }) {
   );
 }
 
-// Escalas previstas x plantões realizados, de 10 dias atrás até 4 dias à frente
+// Gráfico do painel: compara escalas previstas com plantões realizados.
+// Mostro de 10 dias atrás até 4 dias para frente.
 export default function GraficoAtividade({ escalas, plantoes }) {
   const dados = useMemo(() => {
     const hoje = hojeISO();

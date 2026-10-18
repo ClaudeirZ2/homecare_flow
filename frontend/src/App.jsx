@@ -11,8 +11,8 @@ import Plantoes from './pages/Plantoes';
 import Prontuarios from './pages/Prontuarios';
 import Financeiro from './pages/Financeiro';
 
-// Protege rotas: sem usuário logado, redireciona para /login.
-// Com somenteGestao, técnicos são enviados para a Visão Geral.
+// Componente que protege as páginas: sem login volta para /login.
+// Se a página for só da gestão (somenteGestao) e o usuário for técnico, mando para a Visão Geral.
 function RotaPrivada({ children, somenteGestao }) {
   const { usuario, ehGestao } = useAuth();
   if (!usuario) return <Navigate to="/login" replace />;

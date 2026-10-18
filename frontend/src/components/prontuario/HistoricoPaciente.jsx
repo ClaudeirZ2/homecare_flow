@@ -2,7 +2,7 @@ import { ClipboardList } from 'lucide-react';
 import EstadoVazio from '../ui/EstadoVazio';
 import { formatarDataHora } from '../../utils/formatters';
 
-// Sinais vitais exibidos como pequenos indicadores
+// Caixinha de cada sinal vital (pressão, frequência, etc.)
 function Sinal({ rotulo, valor, unidade }) {
   return (
     <div className="sinal">
@@ -12,7 +12,7 @@ function Sinal({ rotulo, valor, unidade }) {
   );
 }
 
-// Linha do tempo com os registros do paciente (mais recente primeiro)
+// Histórico do paciente em formato de linha do tempo (o mais recente em cima)
 export default function HistoricoPaciente({ registros }) {
   if (!registros.length) {
     return <EstadoVazio icone={ClipboardList} titulo="Nenhum registro" descricao="Selecione um paciente para ver o histórico de atendimentos." />;

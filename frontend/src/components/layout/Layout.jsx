@@ -3,7 +3,8 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
-// Estrutura padrão das páginas autenticadas (no celular, o menu lateral vira gaveta)
+// Esqueleto de todas as páginas depois do login: barra no topo, menu lateral e rodapé.
+// No celular o menu lateral vira uma gaveta que abre pelo botão ☰.
 export default function Layout({ children }) {
   const [menuAberto, setMenuAberto] = useState(false);
 

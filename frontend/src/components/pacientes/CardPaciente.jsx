@@ -3,7 +3,7 @@ import Button from '../ui/Button';
 
 const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
-// Card com os dados principais do paciente e ações de edição/exclusão
+// Card de cada paciente com endereço, contato, código do QR e os botões de editar/excluir
 export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir }) {
   return (
     <article className="card paciente-card">

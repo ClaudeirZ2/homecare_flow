@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { formatarData, hojeISO, rotulo } from '../utils/formatters';
 
-// Check-in / check-out dos plantões. O técnico vê só as próprias escalas (filtro feito na API).
+// Tela de check-in e check-out. O técnico só recebe as escalas dele (o filtro é feito na API).
 export default function Plantoes() {
   const { ehGestao } = useAuth();
   const toast = useToast();
@@ -31,7 +31,7 @@ export default function Plantoes() {
         escalaService.listar({ status: 'em_andamento' }),
         plantaoService.listar(),
       ]);
-      // Em andamento primeiro; depois as agendadas da mais próxima para a mais distante
+      // Coloco primeiro as que estão em andamento e depois as agendadas, da mais próxima para a mais longe
       setPendentes([...andamento, ...agendadas.reverse()]);
       setHistorico(plantoes);
     } catch (err) {
@@ -81,7 +81,7 @@ export default function Plantoes() {
     {
       chave: 'acao', titulo: 'Ação',
       render: (e) => {
-        // Check-in só é liberado no dia da escala (a API também valida)
+        // Check-in só no dia da escala (a API também confere isso)
         if (e.status === 'agendado' && e.data_prevista > hojeISO()) {
           return <span className="info-linha"><CalendarClock size={14} /> Liberado em {formatarData(e.data_prevista)}</span>;
         }

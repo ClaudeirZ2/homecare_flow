@@ -1,6 +1,7 @@
 const { verificarToken } = require('../utils/jwt');
 
-// Verifica se existe um token válido no header Authorization: Bearer <token>
+// Esse middleware roda antes das rotas protegidas.
+// Ele procura o token no cabeçalho Authorization (formato: Bearer <token>) e valida.
 function autenticar(req, res, next) {
   const authHeader = req.headers.authorization;
 
@@ -15,14 +16,14 @@ function autenticar(req, res, next) {
 
   try {
     const dadosUsuario = verificarToken(token);
-    req.usuario = dadosUsuario; // disponibiliza o usuário logado nas próximas camadas
+    req.usuario = dadosUsuario; // guardo o usuário na requisição para usar nos controllers
     next();
   } catch (err) {
     return res.status(401).json({ erro: 'Token inválido ou expirado.' });
   }
 }
 
-// Restringe uma rota a determinados tipos de usuário (ex: apenas admin/gestor)
+// Libera a rota só para alguns perfis. Exemplo: permitirTipos('admin', 'gestor')
 function permitirTipos(...tiposPermitidos) {
   return (req, res, next) => {
     if (!tiposPermitidos.includes(req.usuario.tipo)) {
@@ -32,10 +33,10 @@ function permitirTipos(...tiposPermitidos) {
   };
 }
 
-// Atalho: perfis que administram o sistema
+// Atalho que eu uso muito nas rotas: só admin e gestor
 const somenteGestao = permitirTipos('admin', 'gestor');
 
-// true quando o usuário logado é um técnico (vê apenas os próprios dados)
+// Diz se quem está logado é técnico (técnico só pode ver os próprios dados)
 function ehTecnico(req) {
   return req.usuario?.tipo === 'tecnico';
 }

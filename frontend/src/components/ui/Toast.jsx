@@ -1,6 +1,6 @@
 import { CheckCircle2, AlertCircle, X } from 'lucide-react';
 
-// Aviso flutuante de sucesso/erro (exibido pelo ToastProvider)
+// Aviso que aparece no canto da tela (sucesso em verde, erro em vermelho)
 export default function Toast({ tipo = 'sucesso', mensagem, onFechar }) {
   const Icone = tipo === 'erro' ? AlertCircle : CheckCircle2;
   return (

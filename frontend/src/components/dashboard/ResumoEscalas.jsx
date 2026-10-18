@@ -7,7 +7,7 @@ const SERIES = [
   { status: 'cancelado', rotulo: 'Canceladas', cor: '#cbd5e1' },
 ];
 
-// Distribuição das escalas por status (barras, como no mockup)
+// Quantas escalas tem em cada status (as barras que desenhei no mockup)
 export default function ResumoEscalas({ escalas }) {
   return (
     <div className="painel">

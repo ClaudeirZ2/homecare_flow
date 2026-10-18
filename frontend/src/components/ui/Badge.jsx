@@ -1,6 +1,6 @@
 import { rotulo } from '../../utils/formatters';
 
-// Selo de status discreto (ponto colorido + texto)
+// Selo de status: bolinha colorida + nome do status
 const COR_STATUS = {
   agendado: 'azul',
   em_andamento: 'ambar',

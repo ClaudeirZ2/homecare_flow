@@ -31,7 +31,7 @@ const ProntuarioModel = {
     return rows[0];
   },
 
-  // Histórico completo de um paciente, do mais recente para o mais antigo
+  // Todo o histórico do paciente, do registro mais novo para o mais antigo
   async listarPorPaciente(paciente_id) {
     const [rows] = await pool.query(
       `SELECT pr.*, pl.checkin_hora, pl.checkout_hora, u.nome AS profissional_nome

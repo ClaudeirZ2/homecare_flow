@@ -3,7 +3,7 @@ import { ArrowRight, CalendarX2, Clock } from 'lucide-react';
 import Badge from '../ui/Badge';
 import { rotulo } from '../../utils/formatters';
 
-// Lista compacta das escalas do dia
+// Lista resumida com as escalas de hoje
 export default function AgendaHoje({ escalas }) {
   return (
     <div className="painel">

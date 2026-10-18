@@ -4,7 +4,7 @@ import Button from '../ui/Button';
 
 const VAZIO = { nome: '', idade: '', endereco: '', responsavel_contato: '', observacoes_gerais: '' };
 
-// Formulário de criação/edição de paciente
+// Formulário para cadastrar ou editar um paciente
 export default function FormularioPaciente({ paciente, salvando, onSalvar, onCancelar }) {
   const [form, setForm] = useState(VAZIO);
 

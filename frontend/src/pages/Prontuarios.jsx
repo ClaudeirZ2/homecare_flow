@@ -35,7 +35,7 @@ export default function Prontuarios() {
     try {
       await prontuarioService.criar(dados);
       toast.sucesso('Prontuário registrado!');
-      // Mostra o histórico do paciente do plantão que acabou de ser registrado
+      // Depois de salvar, já mostro o histórico do paciente para conferir o registro novo
       const plantao = plantoes.find((p) => String(p.id) === String(dados.plantao_id));
       if (plantao) {
         setPacienteId(String(plantao.paciente_id));

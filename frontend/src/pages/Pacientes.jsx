@@ -13,7 +13,7 @@ import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-// CRUD completo de Pacientes
+// Tela do CRUD de Pacientes, com busca por nome
 export default function Pacientes() {
   const { ehGestao } = useAuth();
   const toast = useToast();

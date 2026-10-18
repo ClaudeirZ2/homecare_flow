@@ -4,7 +4,7 @@ import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { formatarHoras, formatarMoeda, formatarDataHora } from '../../utils/formatters';
 
-// Fechamento mensal por profissional, com ação de marcar como pago
+// Tabela do fechamento do mês, com o botão para marcar como pago
 export default function TabelaPagamentos({ relatorio, onPagar }) {
   const colunas = [
     { chave: 'profissional_nome', titulo: 'Profissional', render: (r) => <span className="celula-principal">{r.profissional_nome}</span> },

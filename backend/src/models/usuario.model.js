@@ -1,7 +1,7 @@
 const { pool } = require('../config/db');
 
 const UsuarioModel = {
-  // Inclui o profissional_id (quando o usuário é um técnico/cuidador)
+  // Já trago o profissional_id junto (se o usuário for técnico), porque preciso dele no token
   async buscarPorEmail(email) {
     const [rows] = await pool.query(
       `SELECT u.*, p.id AS profissional_id
@@ -24,7 +24,7 @@ const UsuarioModel = {
     return rows[0];
   },
 
-  // Aceita uma conexão opcional para participar de uma transação
+  // O parâmetro conn é para conseguir usar esse método dentro de uma transação
   async criar({ nome, email, senha_hash, tipo, telefone }, conn = pool) {
     const [result] = await conn.query(
       'INSERT INTO usuarios (nome, email, senha_hash, tipo, telefone) VALUES (?, ?, ?, ?, ?)',

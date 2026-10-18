@@ -1,4 +1,4 @@
-// Cabeçalho padrão das páginas: título, subtítulo e ações (ex.: botão "+ Novo")
+// Cabeçalho que se repete em todas as páginas: título, subtítulo e botões do lado direito
 export default function PageHeader({ titulo, subtitulo, children }) {
   return (
     <div className="page-header">

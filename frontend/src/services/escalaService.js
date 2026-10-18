@@ -1,8 +1,8 @@
 import api from './api';
 
-// Centraliza todas as chamadas de API relacionadas a Escalas (CRUD completo)
+// Todas as chamadas da API de Escalas ficam aqui (as telas não usam o axios direto)
 export const escalaService = {
-  // filtros opcionais: { status, data } — valores vazios são ignorados
+  // filtros: { status, data }. Se o filtro estiver vazio eu nem mando.
   listar: (filtros = {}) => {
     const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v));
     return api.get('/escalas', { params }).then((res) => res.data);

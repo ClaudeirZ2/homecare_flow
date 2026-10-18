@@ -14,7 +14,7 @@ import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-// CRUD COMPLETO de Escalas, 100% integrado ao backend
+// Tela do CRUD de Escalas: criar, listar/filtrar, editar e excluir, tudo chamando a API
 export default function Escalas() {
   const { ehGestao } = useAuth();
   const toast = useToast();
@@ -41,7 +41,7 @@ export default function Escalas() {
 
   useEffect(() => { carregar(); }, [carregar]);
 
-  // Listas para os selects do formulário (apenas a gestão cria/edita)
+  // Carrego pacientes e profissionais para os selects do formulário (só a gestão precisa)
   useEffect(() => {
     if (!ehGestao) return;
     Promise.all([pacienteService.listar(), profissionalService.listar()])

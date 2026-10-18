@@ -45,7 +45,7 @@ const ProfissionalController = {
     }
   },
 
-  // POST /api/profissionais — cria o login do técnico junto com o cadastro profissional
+  // POST /api/profissionais — já cria o login do técnico junto com o cadastro (uma ação só para o gestor)
   async criar(req, res, next) {
     try {
       const { erro, dados } = validarProfissional(req.body);

@@ -4,7 +4,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-// Menu agrupado por seção. "somenteGestao": visível apenas para admin/gestor.
+// Itens do menu separados por seção.
+// A seção com somenteGestao (Relatórios) não aparece para o técnico.
 const SECOES = [
   {
     titulo: 'Geral',

@@ -1,5 +1,6 @@
-// Botão reutilizável. Variantes: primary, secondary, outline, danger, ghost, ghost-danger.
-// "icone" recebe um componente do lucide-react (ex.: icone={Plus}).
+// Botão que eu reaproveito no sistema todo.
+// variant muda a cor (primary, secondary, outline, danger, ghost, ghost-danger).
+// icone recebe um ícone do lucide-react, por exemplo icone={Plus}.
 export default function Button({
   children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, carregando,
   icone: Icone, bloco, titulo,

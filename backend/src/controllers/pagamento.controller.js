@@ -5,7 +5,7 @@ const MES_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 const PagamentoController = {
   // GET /api/pagamentos/relatorio/:mes  (ex: /api/pagamentos/relatorio/2026-10)
-  // Calcula e persiste o fechamento financeiro do mês para todos os profissionais
+  // Calcula o fechamento do mês de todos os profissionais e já grava na tabela de pagamentos
   async gerarRelatorioMensal(req, res, next) {
     try {
       const { mes } = req.params;

@@ -1,6 +1,6 @@
-// Funções de formatação compartilhadas pelas telas
+// Funções para formatar datas, valores e textos nas telas
 
-// 'AAAA-MM-DD' -> 'DD/MM/AAAA' (sem usar Date, para não sofrer com fuso horário)
+// '2026-10-16' vira '16/10/2026'. Faço só com texto, porque com new Date() o fuso fazia o dia mudar.
 export function formatarData(dataISO) {
   if (!dataISO) return '—';
   const [ano, mes, dia] = String(dataISO).slice(0, 10).split('-');
@@ -22,7 +22,7 @@ export function formatarHoras(valor) {
   return `${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} h`;
 }
 
-// Data local de hoje no formato 'AAAA-MM-DD' (toISOString usaria UTC e erraria à noite)
+// Data de hoje 'AAAA-MM-DD' no horário local (o toISOString usa UTC e à noite já dava o dia seguinte)
 export function hojeISO() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, '0');
@@ -53,5 +53,5 @@ export const ROTULOS = {
 
 export const rotulo = (valor) => ROTULOS[valor] || valor || '—';
 
-// Converte um objeto { chave: rótulo } em opções para o <Input options>
+// Transforma uma lista de chaves em opções de select, já com o nome bonito
 export const opcoes = (...chaves) => chaves.map((c) => ({ value: c, label: rotulo(c) }));

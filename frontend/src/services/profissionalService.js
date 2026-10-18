@@ -1,6 +1,6 @@
 import api from './api';
 
-// CRUD completo de Profissionais/Cuidadores
+// Chamadas da API de Profissionais/Cuidadores
 export const profissionalService = {
   listar: () => api.get('/profissionais').then((res) => res.data),
   detalhar: (id) => api.get(`/profissionais/${id}`).then((res) => res.data),

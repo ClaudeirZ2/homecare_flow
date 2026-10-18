@@ -27,8 +27,8 @@ const ProfissionalModel = {
     return rows[0];
   },
 
-  // Cria o usuário de acesso (tipo técnico) + o profissional numa única transação:
-  // ou grava os dois, ou não grava nenhum.
+  // Cadastro do profissional em duas tabelas: primeiro o usuário (login) e depois o profissional.
+  // Uso transação para não sobrar um usuário sem profissional se der erro no meio.
   async criarComUsuario({ nome, email, senha_hash, telefone, especialidade, valor_hora }) {
     const conn = await pool.getConnection();
     let profissionalId;
@@ -86,8 +86,8 @@ const ProfissionalModel = {
     return this.buscarPorId(id);
   },
 
-  // Soft delete: preserva plantões e pagamentos já registrados;
-  // bloqueia o login e cancela as escalas ainda não realizadas.
+  // "Excluir" aqui é desativar: os plantões e pagamentos antigos continuam no histórico,
+  // o login fica bloqueado e as escalas futuras são canceladas.
   async remover(id) {
     await pool.query('UPDATE profissionais SET ativo = FALSE WHERE id = ?', [id]);
     await pool.query(

@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// O token carrega o perfil e, para técnicos, o id do profissional vinculado
+// Coloco no token o id, o perfil e, se for técnico, o id do profissional.
+// Assim as rotas sabem quem está chamando sem ir no banco toda vez.
 function gerarToken(usuario) {
   return jwt.sign(
     {

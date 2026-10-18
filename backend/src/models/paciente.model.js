@@ -32,9 +32,9 @@ const PacienteModel = {
   },
 
   async remover(id) {
-    // Soft delete: mantém o histórico de atendimentos intacto
+    // Não apago de verdade (soft delete): só marco como inativo para não perder o histórico
     await pool.query('UPDATE pacientes SET ativo = FALSE WHERE id = ?', [id]);
-    // Escalas futuras deste paciente deixam de fazer sentido
+    // E cancelo as escalas que ainda iam acontecer para esse paciente
     await pool.query(
       "UPDATE escalas SET status = 'cancelado' WHERE paciente_id = ? AND status = 'agendado'",
       [id]

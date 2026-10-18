@@ -11,7 +11,7 @@ import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-// CRUD completo de Profissionais/Cuidadores
+// Tela do CRUD de Cuidadores/Profissionais
 export default function Profissionais() {
   const { ehGestao } = useAuth();
   const toast = useToast();

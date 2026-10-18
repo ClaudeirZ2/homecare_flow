@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import Logo from './Logo';
 import { rotulo } from '../../utils/formatters';
 
-// Iniciais do nome para o avatar (ex.: "Ana Souza" -> "AS")
+// Pega as iniciais do nome para o avatar ("Ana Souza" vira "AS")
 const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 export default function Navbar({ onAlternarMenu }) {

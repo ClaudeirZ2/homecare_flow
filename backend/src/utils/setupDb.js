@@ -1,10 +1,25 @@
-// Uso: npm run db:setup  (dentro da pasta backend)
-// Cria o banco do zero executando database/schema.sql e database/seed.sql,
-// sem precisar do cliente de linha de comando do MySQL.
+// Script para criar o banco do zero: roda o database/schema.sql e depois o database/seed.sql.
+// Uso (dentro da pasta backend):  npm run db:setup
+// Fiz esse script para não depender do cliente de linha de comando do MySQL
+// e para conseguir criar o banco também na nuvem com o mesmo comando.
 const fs = require('fs');
 const path = require('path');
+
+// Com "--env .env.nuvem" eu uso outro arquivo de configuração (o do banco na nuvem).
+// Precisa carregar ANTES do opcoesConexao, porque ele lê as variáveis ao ser importado.
+const indiceEnv = process.argv.indexOf('--env');
+if (indiceEnv > -1) {
+  const arquivo = process.argv[indiceEnv + 1];
+  if (!fs.existsSync(arquivo)) {
+    console.error(`❌ Arquivo ${arquivo} não encontrado (copie o .env.example e preencha).`);
+    process.exit(1);
+  }
+  require('dotenv').config({ path: arquivo });
+  console.log(`ℹ️  Usando as configurações de ${arquivo}`);
+}
+
 const mysql = require('mysql2/promise');
-require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
+const { opcoesConexao, FUSO_MYSQL } = require('../config/opcoesConexao');
 
 const PASTA_DB = path.join(__dirname, '..', '..', '..', 'database');
 
@@ -16,14 +31,13 @@ async function executarArquivo(conn, arquivo) {
 
 async function main() {
   const conn = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    multipleStatements: true, // necessário para rodar o arquivo .sql inteiro
+    ...opcoesConexao,
+    multipleStatements: true, // precisa disso para rodar o arquivo .sql inteiro de uma vez
   });
 
   try {
+    // Mesmo fuso da API, para o CURDATE() do seed bater com o dia de hoje no Brasil
+    await conn.query(`SET time_zone = '${FUSO_MYSQL}'`);
     await executarArquivo(conn, 'schema.sql');
     await executarArquivo(conn, 'seed.sql');
     console.log('🎉 Banco pronto! Login de teste: admin@homecareflow.com / 123456');

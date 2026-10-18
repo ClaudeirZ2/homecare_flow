@@ -3,7 +3,7 @@ import Toast from '../components/ui/Toast';
 
 const ToastContext = createContext(null);
 
-// Notificações rápidas de sucesso/erro, disponíveis em qualquer tela via useToast()
+// Contexto dos avisos: qualquer tela chama toast.sucesso('...') ou toast.erro('...') pelo useToast()
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
@@ -13,7 +13,7 @@ export function ToastProvider({ children }) {
 
   const mostrar = useCallback((mensagem, tipo) => {
     const id = Date.now() + Math.random();
-    setToasts((lista) => [...lista, { id, mensagem, tipo }].slice(-3)); // no máximo 3 avisos na tela
+    setToasts((lista) => [...lista, { id, mensagem, tipo }].slice(-3)); // deixo no máximo 3 avisos de cada vez
     setTimeout(() => remover(id), 4000);
   }, [remover]);
 

@@ -3,7 +3,7 @@ const EscalaModel = require('../models/escala.model');
 const PacienteModel = require('../models/paciente.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
 
-// Coordenadas GPS válidas (latitude -90..90, longitude -180..180)
+// Confere se a localização faz sentido (latitude entre -90 e 90, longitude entre -180 e 180)
 function coordenadasValidas(lat, lng) {
   return (
     lat !== undefined && lng !== undefined && lat !== null && lng !== null &&
@@ -11,20 +11,20 @@ function coordenadasValidas(lat, lng) {
   );
 }
 
-// Data local de hoje 'AAAA-MM-DD' (mesmo formato das colunas DATE)
+// Data de hoje no formato 'AAAA-MM-DD', igual ao que vem do banco, para dar para comparar
 function hojeLocal() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-// Técnico só pode operar plantões/escalas que são dele
+// Técnico só mexe no que é dele. Admin e gestor podem mexer em tudo.
 function pertenceAoUsuario(req, profissional_id) {
   return !ehTecnico(req) || profissional_id === req.usuario.profissional_id;
 }
 
 const PlantaoController = {
-  // GET /api/plantoes — gestão vê todos; técnico vê os próprios
+  // GET /api/plantoes — a gestão vê todos; o técnico vê só os dele
   async listar(req, res, next) {
     try {
       const filtro = ehTecnico(req) ? { profissional_id: req.usuario.profissional_id || -1 } : {};
@@ -35,7 +35,7 @@ const PlantaoController = {
   },
 
   // POST /api/plantoes/checkin  { escala_id, metodo: 'gps'|'qrcode', lat?, lng?, codigo? }
-  // Profissional e paciente vêm da própria escala (não confiamos no que o cliente envia).
+  // Não confio no profissional/paciente que vem da tela: pego tudo da própria escala no banco.
   async checkin(req, res, next) {
     try {
       const { escala_id, metodo, lat, lng, codigo } = req.body;
@@ -60,7 +60,8 @@ const PlantaoController = {
         return res.status(400).json({ erro: 'Localização GPS inválida ou não informada.' });
       }
       if (metodo === 'qrcode') {
-        // O código lido precisa ser o QR Code fixado na casa DESTE paciente
+        // O código digitado/lido tem que ser o QR Code da casa DESTE paciente.
+        // É isso que prova que o profissional estava mesmo no endereço.
         const paciente = await PacienteModel.buscarPorId(escala.paciente_id);
         if (!paciente || codigo?.trim().toUpperCase() !== paciente.qr_code_id.toUpperCase()) {
           return res.status(400).json({ erro: 'QR Code não corresponde à residência deste paciente.' });

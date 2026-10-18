@@ -1,4 +1,4 @@
-// Campo de formulário reutilizável (input, select ou textarea)
+// Campo de formulário reutilizável. Se receber options vira select; type="textarea" vira caixa de texto.
 export default function Input({
   label, name, value, onChange, type = 'text', options, required, rows,
   placeholder, min, max, step, disabled, ajuda, textoVazio = 'Selecione...', icone: Icone,

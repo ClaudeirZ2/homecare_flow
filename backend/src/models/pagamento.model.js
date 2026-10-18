@@ -1,8 +1,9 @@
 const { pool } = require('../config/db');
 
 const PagamentoModel = {
-  // Calcula automaticamente quantos plantões um profissional concluiu em um mês,
-  // quantas horas trabalhou e qual o valor total a receber (horas × valor/hora).
+  // Aqui está a regra principal do financeiro: para cada profissional, somo os plantões
+  // finalizados no mês e calculo minutos trabalhados / 60 × valor da hora.
+  // As horas vêm do check-in e do check-out, não de anotação manual.
   async calcularMes(mes_referencia) {
     const [rows] = await pool.query(
       `SELECT
@@ -19,7 +20,8 @@ const PagamentoModel = {
     return rows;
   },
 
-  // Grava/atualiza o fechamento. Fechamentos já pagos não são recalculados.
+  // Grava o fechamento do mês (ou atualiza se já existir).
+  // Se já foi pago, não deixo o valor mudar.
   async salvarFechamento({ profissional_id, mes_referencia, qtd_plantoes, valor_total }) {
     await pool.query(
       `INSERT INTO pagamentos (profissional_id, mes_referencia, qtd_plantoes, valor_total)
@@ -31,7 +33,7 @@ const PagamentoModel = {
     );
   },
 
-  // Fechamentos de um mês com dados do profissional e horas trabalhadas
+  // Lista o fechamento do mês com o nome do profissional e as horas, para mostrar na tela
   async listarPorMes(mes_referencia) {
     const [rows] = await pool.query(
       `SELECT pg.*, u.nome AS profissional_nome, prof.valor_hora,

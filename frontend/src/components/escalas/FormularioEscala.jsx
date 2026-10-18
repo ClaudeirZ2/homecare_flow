@@ -8,7 +8,8 @@ const STATUS = opcoes('agendado', 'em_andamento', 'concluido', 'cancelado');
 
 const VAZIO = { profissional_id: '', paciente_id: '', data_prevista: '', turno: '', status: 'agendado', observacoes: '' };
 
-// Serve tanto para CRIAR (escala = null) quanto para EDITAR (escala preenchida)
+// O mesmo formulário serve para criar e para editar:
+// se receber uma escala, preenche os campos; se vier null, começa vazio.
 export default function FormularioEscala({ escala, pacientes, profissionais, salvando, onSalvar, onCancelar }) {
   const [form, setForm] = useState(VAZIO);
 

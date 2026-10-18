@@ -1,8 +1,9 @@
 import logoIcone from '../../assets/logo-icone.png';
 import logoCompleta from '../../assets/logo-completa.png';
 
-// Logo oficial do Home Care Flow.
-// variante="icone": coração + nome (barra superior); variante="completa": logo com slogan (login).
+// Logo do Home Care Flow (recortada da arte original).
+// variante="icone": coração + nome, para a barra do topo.
+// variante="completa": logo inteira com o slogan, para a tela de login.
 export default function Logo({ variante = 'icone', tamanho = 34 }) {
   if (variante === 'completa') {
     return <img src={logoCompleta} alt="Home Care Flow — Tecnologia e cuidado em harmonia" className="logo-completa" />;

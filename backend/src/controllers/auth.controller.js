@@ -5,7 +5,8 @@ const { gerarToken } = require('../utils/jwt');
 const TIPOS_VALIDOS = ['admin', 'gestor', 'tecnico'];
 
 const AuthController = {
-  // POST /api/auth/cadastro  (somente admin — evita que qualquer pessoa crie um administrador)
+  // POST /api/auth/cadastro
+  // Deixei só para o admin: se fosse aberto, qualquer pessoa poderia se cadastrar como administrador.
   async cadastrar(req, res, next) {
     try {
       const { nome, email, senha, tipo, telefone } = req.body;
@@ -45,7 +46,7 @@ const AuthController = {
 
       const usuario = await UsuarioModel.buscarPorEmail(email);
 
-      // Mesma mensagem para email ou senha errados (não revela quais emails existem)
+      // Uso a mesma mensagem para email ou senha errados, assim ninguém descobre quais emails existem no sistema
       if (!usuario || !(await bcrypt.compare(senha, usuario.senha_hash))) {
         return res.status(401).json({ erro: 'Email ou senha inválidos.' });
       }
@@ -62,7 +63,7 @@ const AuthController = {
     }
   },
 
-  // GET /api/auth/me — dados do usuário logado (a partir do token)
+  // GET /api/auth/me — devolve os dados de quem está logado (pego o id de dentro do token)
   async me(req, res, next) {
     try {
       const usuario = await UsuarioModel.buscarPorId(req.usuario.id);

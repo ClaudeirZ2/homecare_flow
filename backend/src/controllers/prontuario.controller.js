@@ -2,7 +2,7 @@ const ProntuarioModel = require('../models/prontuario.model');
 const PlantaoModel = require('../models/plantao.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
 
-// Converte campo numérico opcional; retorna NaN se fora da faixa aceitável
+// Campo numérico opcional: vazio vira null, e valor fora da faixa vira NaN (para eu recusar depois)
 function numeroOpcional(valor, min, max) {
   if (valor === undefined || valor === null || valor === '') return null;
   const n = Number(valor);

@@ -1,4 +1,4 @@
-// Barra horizontal com rótulo e valor (estilo do mockup do dashboard)
+// Barra de progresso com nome, quantidade e porcentagem
 export default function BarraProgresso({ rotulo, valor, total, cor = 'var(--color-accent)' }) {
   const pct = total ? Math.round((valor / total) * 100) : 0;
   return (

@@ -1,4 +1,4 @@
-// Erros conhecidos do MySQL traduzidos para respostas amigáveis
+// Alguns erros do MySQL eu traduzo para mensagens que o usuário entende
 const ERROS_MYSQL = {
   ER_DUP_ENTRY: { status: 409, erro: 'Registro duplicado: já existe um cadastro com esses dados.' },
   ER_NO_REFERENCED_ROW_2: { status: 400, erro: 'Registro relacionado não encontrado (verifique os IDs informados).' },
@@ -7,7 +7,7 @@ const ERROS_MYSQL = {
   WARN_DATA_TRUNCATED: { status: 400, erro: 'Valor inválido em um dos campos.' },
 };
 
-// Middleware final: captura qualquer erro não tratado nas rotas
+// Último middleware da API: tudo que der erro nos controllers (next(err)) cai aqui
 function errorHandler(err, req, res, next) {
   console.error('🔥 Erro:', err.code || '', err.message);
 
@@ -18,7 +18,7 @@ function errorHandler(err, req, res, next) {
 
   const status = err.status || 500;
   res.status(status).json({
-    // Erros internos não expõem detalhes do banco para o cliente
+    // Em erro 500 não mostro a mensagem real, para não expor detalhes do banco
     erro: status < 500 ? err.message : 'Erro interno no servidor.',
   });
 }

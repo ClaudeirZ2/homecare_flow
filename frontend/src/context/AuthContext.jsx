@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   }
 
-  // Admin e gestor administram cadastros, escalas e financeiro; técnico executa plantões
+  // Admin e gestor cuidam dos cadastros, escalas e financeiro. O técnico faz os plantões.
   const ehGestao = usuario?.tipo === 'admin' || usuario?.tipo === 'gestor';
 
   return (

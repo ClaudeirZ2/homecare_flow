@@ -9,7 +9,8 @@ const VAZIO = {
   saturacao_oxigenio: '', medicacao_administrada: '', intercorrencias: '', observacoes: '',
 };
 
-// Registro padronizado do plantão. onSalvar deve retornar true quando gravar com sucesso.
+// Formulário do prontuário (sempre os mesmos campos, para padronizar o registro).
+// Só limpo os campos se o onSalvar devolver true, ou seja, se salvou de verdade.
 export default function FormularioProntuario({ plantoes, salvando, onSalvar }) {
   const [form, setForm] = useState(VAZIO);
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });

@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { hojeISO } from '../utils/formatters';
 
-// Data por extenso para o cabeçalho (ex.: "sexta-feira, 16 de outubro")
+// Data por extenso no cabeçalho, tipo "sexta-feira, 16 de outubro"
 const dataExtenso = () => new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
 
 export default function Dashboard() {

@@ -3,8 +3,8 @@ import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 
-// Check-in pelo código do QR Code fixado na residência do paciente.
-// (Evolução: trocar o campo de texto por leitura pela câmera, ex.: biblioteca html5-qrcode.)
+// Check-in pelo código do QR Code que fica na casa do paciente.
+// Por enquanto o código é digitado. Próximo passo: ler pela câmera (biblioteca html5-qrcode).
 export default function ModalCheckinQr({ escala, salvando, onConfirmar, onFechar }) {
   const [codigo, setCodigo] = useState('');
 

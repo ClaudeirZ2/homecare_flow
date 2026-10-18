@@ -1,6 +1,7 @@
 import { Inbox } from 'lucide-react';
 
-// Tabela genérica: recebe colunas [{ chave, titulo, render?, alinhar? }] e dados
+// Tabela genérica que uso em várias telas.
+// Recebo as colunas como lista: { chave, titulo, render (opcional), alinhar (opcional) }.
 export default function Table({ colunas, dados, vazio = 'Nenhum registro encontrado.', carregando }) {
   return (
     <div className="tabela-wrap">

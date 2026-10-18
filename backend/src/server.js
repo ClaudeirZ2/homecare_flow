@@ -5,7 +5,7 @@ require('dotenv').config();
 const { testarConexao } = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Rotas
+// Rotas (cada arquivo cuida de um recurso da API)
 const authRoutes = require('./routes/auth.routes');
 const pacientesRoutes = require('./routes/pacientes.routes');
 const profissionaisRoutes = require('./routes/profissionais.routes');
@@ -16,16 +16,19 @@ const pagamentosRoutes = require('./routes/pagamentos.routes');
 
 const app = express();
 
-// Em produção, defina CORS_ORIGIN (ex.: https://meu-front.com); em dev libera tudo
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+// CORS: no meu computador libero tudo. Na nuvem coloco em CORS_ORIGIN
+// o endereço do front na Vercel, assim só o meu site consegue chamar a API.
+// Dá para colocar mais de um endereço separado por vírgula.
+const origens = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()) : '*';
+app.use(cors({ origin: origens }));
 app.use(express.json());
 
-// Rota de verificação rápida (health check)
+// Rota simples para saber se a API está no ar (o Render também usa para checar a saúde do serviço)
 app.get('/', (req, res) => {
   res.json({ status: 'online', projeto: 'Home Care Flow API' });
 });
 
-// Montagem das rotas da API
+// Aqui eu "monto" cada grupo de rotas no seu caminho
 app.use('/api/auth', authRoutes);
 app.use('/api/pacientes', pacientesRoutes);
 app.use('/api/profissionais', profissionaisRoutes);
@@ -34,22 +37,23 @@ app.use('/api/plantoes', plantoesRoutes);
 app.use('/api/prontuarios', prontuariosRoutes);
 app.use('/api/pagamentos', pagamentosRoutes);
 
-// Rota inexistente
+// Se ninguém respondeu até aqui, a rota não existe
 app.use('/api', (req, res) => {
   res.status(404).json({ erro: `Rota não encontrada: ${req.method} ${req.originalUrl}` });
 });
 
-// Tratamento de erros (deve ser o último middleware)
+// O tratamento de erros precisa ser o último middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
+// Sem o segredo do JWT o login não funciona, então nem deixo o servidor subir
 if (!process.env.JWT_SECRET) {
   console.error('❌ JWT_SECRET não definido. Copie .env.example para .env e preencha.');
   process.exit(1);
 }
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Home Care Flow API rodando em http://localhost:${PORT}`);
+  console.log(`🚀 Home Care Flow API rodando na porta ${PORT}`);
   await testarConexao();
 });

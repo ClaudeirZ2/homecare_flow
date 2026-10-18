@@ -3,7 +3,7 @@ import Table from '../ui/Table';
 import Badge from '../ui/Badge';
 import { formatarData, formatarDataHora, formatarHoras } from '../../utils/formatters';
 
-// Histórico de plantões realizados (check-in/out, método e horas)
+// Histórico dos plantões: horário de entrada e saída, se foi por GPS ou QR, e as horas
 export default function TabelaHistoricoPlantoes({ plantoes, mostrarProfissional }) {
   const colunas = [
     { chave: 'data_prevista', titulo: 'Data', render: (p) => <span className="numero">{formatarData(p.data_prevista)}</span> },

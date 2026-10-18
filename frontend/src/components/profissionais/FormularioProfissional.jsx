@@ -7,8 +7,8 @@ const VAZIO = {
   nome: '', email: '', telefone: '', senha: '', especialidade: '', valor_hora: '', status_disponibilidade: 'disponivel',
 };
 
-// Criação: gera também o login do profissional (email + senha inicial).
-// Edição: senha não é alterada por aqui.
+// No cadastro já crio o login do profissional (email + senha inicial).
+// Na edição não mostro o campo de senha.
 export default function FormularioProfissional({ profissional, salvando, onSalvar, onCancelar }) {
   const [form, setForm] = useState(VAZIO);
 

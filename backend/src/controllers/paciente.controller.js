@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const PacienteModel = require('../models/paciente.model');
 
-// Valida e normaliza os campos enviados pelo formulário
+// Confiro os campos do formulário e já limpo os espaços extras
 function validarPaciente(body) {
   const nome = body.nome?.trim();
   if (!nome) return { erro: 'Nome é obrigatório.' };
@@ -9,7 +9,7 @@ function validarPaciente(body) {
   let idade = null;
   if (body.idade !== undefined && body.idade !== null && body.idade !== '') {
     idade = Number(body.idade);
-    // O projeto não atende menores de 18 anos (restrição do edital)
+    // O edital não permite projeto voltado para menores de 18 anos, então barro aqui também
     if (!Number.isInteger(idade) || idade < 18 || idade > 130) {
       return { erro: 'A idade deve ser um número inteiro entre 18 e 130.' };
     }
@@ -50,7 +50,7 @@ const PacienteController = {
       const { erro, dados } = validarPaciente(req.body);
       if (erro) return res.status(400).json({ erro });
 
-      // Identificador único do QR Code fixado na residência do paciente
+      // Gero um código único para o QR Code que fica colado na casa do paciente
       const qr_code_id = `QR-PAC-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
       const paciente = await PacienteModel.criar({ ...dados, qr_code_id });

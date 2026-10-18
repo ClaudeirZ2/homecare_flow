@@ -11,7 +11,8 @@ const SELECT_PLANTAO = `
   JOIN profissionais prof ON prof.id = pl.profissional_id
   JOIN usuarios u ON u.id = prof.usuario_id`;
 
-// Executa várias queries como uma unidade: ou tudo é gravado, ou nada é.
+// Transação: o check-in mexe em 3 tabelas (plantoes, escalas e profissionais).
+// Se uma das queries falhar, desfaço tudo (rollback) para o banco não ficar pela metade.
 async function emTransacao(fn) {
   const conn = await pool.getConnection();
   try {
@@ -33,7 +34,7 @@ const PlantaoModel = {
     return rows[0];
   },
 
-  // Lista todos (gestão) ou apenas os de um profissional (técnico)
+  // Sem filtro traz todos (visão da gestão); com profissional_id traz só os dele
   async listar({ profissional_id } = {}) {
     const where = profissional_id ? 'WHERE pl.profissional_id = ?' : '';
     const [rows] = await pool.query(
@@ -47,7 +48,7 @@ const PlantaoModel = {
     return this.listar({ profissional_id });
   },
 
-  // Registra o check-in: cria o plantão vinculado a uma escala
+  // Check-in: cria o plantão com a hora atual e a localização
   async checkin({ escala, lat, lng, metodo }) {
     const id = await emTransacao(async (conn) => {
       const [result] = await conn.query(
@@ -57,7 +58,7 @@ const PlantaoModel = {
         [escala.id, escala.profissional_id, escala.paciente_id, lat ?? null, lng ?? null, metodo]
       );
 
-      // Atualiza o status da escala e do profissional
+      // A escala passa para "em andamento" e o profissional fica "em plantão"
       await conn.query("UPDATE escalas SET status = 'em_andamento' WHERE id = ?", [escala.id]);
       await conn.query(
         "UPDATE profissionais SET status_disponibilidade = 'em_plantao' WHERE id = ?",
@@ -69,7 +70,7 @@ const PlantaoModel = {
     return this.buscarPorId(id);
   },
 
-  // Registra o check-out: finaliza o plantão
+  // Check-out: fecha o plantão e libera o profissional
   async checkout(plantao, { lat, lng }) {
     await emTransacao(async (conn) => {
       await conn.query(

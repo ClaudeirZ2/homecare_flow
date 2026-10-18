@@ -1,21 +1,22 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const { opcoesConexao, FUSO_MYSQL } = require('./opcoesConexao');
 
-// Pool de conexões: mais eficiente que abrir/fechar conexão a cada requisição
+// Uso um pool de conexões: ele reaproveita as conexões abertas
+// em vez de abrir e fechar uma nova a cada requisição (fica bem mais rápido).
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  ...opcoesConexao,
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  // Colunas DATE voltam como texto 'AAAA-MM-DD' (evita o dia "voltar um" por causa do fuso horário)
-  dateStrings: ['DATE'],
 });
 
-// Testa a conexão ao iniciar o servidor
+// Toda conexão nova do pool já começa no horário de Brasília
+pool.pool.on('connection', (conexao) => {
+  conexao.query(`SET time_zone = '${FUSO_MYSQL}'`);
+});
+
+// Chamo essa função quando o servidor sobe, só para ver no terminal se o banco respondeu
 async function testarConexao() {
   try {
     const conn = await pool.getConnection();

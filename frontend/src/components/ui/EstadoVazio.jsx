@@ -1,6 +1,6 @@
 import { Inbox } from 'lucide-react';
 
-// Mensagem padrão para listas vazias
+// O que aparece quando uma lista não tem nada
 export default function EstadoVazio({ titulo, descricao, icone: Icone = Inbox }) {
   return (
     <div className="vazio painel">

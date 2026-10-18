@@ -1,31 +1,74 @@
-# Arquitetura e Modelo de Dados
+# Arquitetura e modelo de dados
+
+## Visão geral
+
+```
+Navegador (React)  ──HTTP/JSON + token JWT──▶  API (Node/Express)  ──SQL──▶  MySQL
+   Vercel                                          Render                       Aiven
+```
+
+No meu computador as três partes rodam juntas (`localhost:3000`, `localhost:5000` e o MySQL local).
+Na nuvem, cada uma fica num serviço (ver [DEPLOY.md](DEPLOY.md)).
+
+## Backend em camadas
+
+Uma requisição passa por estas etapas, nesta ordem:
+
+1. **routes**: define o caminho e o método (ex.: `PUT /api/escalas/:id`).
+2. **middlewares**:
+   - `autenticar` confere o token JWT;
+   - `somenteGestao` e `permitirTipos` conferem o perfil.
+3. **controllers**: validam os dados que chegaram e aplicam as regras de negócio.
+4. **models**: fazem as consultas SQL (sempre com `?`, para evitar SQL Injection).
+5. **errorHandler**: se algo der errado, devolve `{ "erro": "..." }` com o status HTTP certo.
 
 ## Relacionamentos
-- usuarios 1—1 profissionais (`profissionais.usuario_id` único)
-- profissionais 1—N escalas N—1 pacientes
-- escalas 1—1 plantoes (`plantoes.escala_id` único: uma escala gera no máximo um plantão)
-- plantoes 1—N prontuarios
-- profissionais 1—N pagamentos (único por profissional + mês)
+
+| Relação | Tipo | Observação |
+|---|---|---|
+| usuarios → profissionais | 1 : 1 | `profissionais.usuario_id` é único |
+| profissionais → escalas | 1 : N | |
+| pacientes → escalas | 1 : N | |
+| escalas → plantoes | 1 : 1 | `plantoes.escala_id` é único (uma escala gera no máximo um plantão) |
+| plantoes → prontuarios | 1 : N | |
+| profissionais → pagamentos | 1 : N | único por profissional + mês |
 
 ## Fluxo principal
-1. O gestor cria a **escala** (paciente + profissional + data + turno). A API bloqueia o mesmo profissional duas vezes no mesmo dia e turno.
-2. O profissional faz o **check-in** por GPS ou QR Code. Isso cria o **plantão**, a escala passa a `em_andamento` e o profissional a `em_plantao`. Tudo acontece em uma transação.
-   - QR Code: o código informado precisa ser igual ao `qr_code_id` do paciente da escala.
-3. O profissional registra o **prontuário** do plantão (sinais vitais validados por faixa).
-4. No **check-out**, o plantão fica `finalizado`, a escala `concluido` e o profissional volta a `disponivel`.
-5. No fim do mês, o **relatório** soma as horas finalizadas × valor/hora e grava em `pagamentos`. Um fechamento já pago não é recalculado.
 
-## Regras de exclusão
-- **Escala:** exclusão física, permitida só se ainda não houver plantão. Depois disso, use o status `cancelado`.
-- **Paciente / Profissional:** exclusão lógica (`ativo = FALSE`). As escalas `agendado` deles passam a `cancelado`. O profissional desativado perde o login.
+1. O gestor cadastra **pacientes** e **profissionais**. O cadastro do profissional também cria o login dele.
+2. O gestor monta a **escala** (paciente + profissional + data + turno).
+   A API não deixa o mesmo profissional em duas escalas no mesmo dia e turno.
+3. No dia da escala, o profissional faz o **check-in**:
+   - por **GPS**: grava a latitude e a longitude;
+   - ou por **QR Code**: o código precisa ser o da casa daquele paciente.
+
+   Isso cria o **plantão**, a escala passa para `em_andamento` e o profissional para `em_plantao`.
+   Tudo numa **transação**.
+4. Durante o plantão ele registra o **prontuário** (sinais vitais validados por faixa).
+5. No **check-out**, o plantão vai para `finalizado`, a escala para `concluido` e o profissional volta a `disponivel`.
+6. No fim do mês, o **financeiro** soma os minutos de cada plantão finalizado × valor da hora e grava
+   em `pagamentos`. Depois de marcado como pago, o valor não muda mais.
+
+## Regras importantes
+- **Exclusão de escala:** só se ainda não tiver plantão. Depois disso, o certo é mudar o status para `cancelado`.
+- **Exclusão de paciente e profissional:** é **lógica** (`ativo = FALSE`), para não perder o histórico.
+  As escalas futuras deles são canceladas, e o profissional desativado perde o acesso.
+- **Técnico** só vê e mexe nas próprias escalas e plantões. A regra está na API, não só na tela.
+- **Check-in** só é liberado no dia da escala.
 
 ## Segurança
-- Senhas com bcrypt; autenticação JWT (o token leva `id`, `tipo` e `profissional_id`).
-- Autorização na API: `somenteGestao` (admin/gestor) para escrita; técnico filtrado pelo próprio `profissional_id`.
-- SQL sempre parametrizado (`?`); erros do MySQL traduzidos em mensagens amigáveis, sem expor detalhes internos.
+- Senhas guardadas com **bcrypt** (hash, nunca o texto da senha).
+- Login com **JWT**, que expira em 8h. O token leva `id`, `tipo` e `profissional_id`.
+- SQL parametrizado em todas as consultas.
+- Erros internos não mostram detalhes do banco.
+- `.env` fora do GitHub. Na nuvem, as senhas ficam nas variáveis do Render.
+- **CORS** restrito ao endereço do frontend na nuvem.
 
-## Convenções
-- Backend em camadas: routes → middlewares → controllers (validação/regras) → models (SQL)
-- Frontend: pages (telas) → components (reutilizáveis, por módulo + `ui/`) → services (API)
-- Feedback ao usuário via `ToastContext` (`useToast().sucesso/erro`)
-- Datas `DATE` trafegam como texto `AAAA-MM-DD` (`dateStrings: ['DATE']`) para evitar erro de fuso horário
+## Datas e fuso horário
+- Colunas `DATE` voltam como texto `AAAA-MM-DD` (`dateStrings`), para o dia não "voltar um" na tela.
+- As conexões com o MySQL usam o fuso `-03:00`, porque os servidores na nuvem usam UTC.
+
+## Convenções do código
+- Nomes em português, seguindo o domínio do problema (escala, plantão, prontuário).
+- Frontend: uma pasta de componentes por módulo, mais `ui/` (genéricos) e `layout/`.
+- Cores e espaçamentos centralizados em `styles/variables.css`.

@@ -4,7 +4,7 @@ import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { formatarData, rotulo } from '../../utils/formatters';
 
-// Tabela de escalas; as ações de editar/excluir só aparecem para a gestão
+// Tabela de escalas. Os botões de editar e excluir só aparecem para admin/gestor.
 export default function TabelaEscalas({ escalas, carregando, podeEditar, onEditar, onExcluir }) {
   const colunas = [
     { chave: 'data_prevista', titulo: 'Data', render: (e) => <span className="numero">{formatarData(e.data_prevista)}</span> },
