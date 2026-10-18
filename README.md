@@ -89,6 +89,7 @@ Quem mais perde com isso é o profissional, que não tem como comprovar as horas
 | **Visão Geral** | Indicadores, gráfico de atividade, escalas por status, agenda do dia, **pontos de atenção** (check-in longe da casa, plantão sem prontuário) e **atividade recente** (auditoria). | Admin / Gestor |
 | **Meu dia** | Painel do técnico: plantão de hoje em destaque, próximas escalas e ganhos do mês. | Técnico |
 | **Meu perfil** | Dados da conta e **troca de senha**. | Todos |
+| **App no celular (PWA)** | Pode ser **instalado na tela inicial** do celular, abre em tela cheia, carrega rápido e não fica em branco sem internet. No celular, as tabelas viram cartões fáceis de tocar. | Todos |
 
 **Perfis de acesso:**
 - **Admin/Gestor:** cadastram, montam as escalas e acessam o financeiro.

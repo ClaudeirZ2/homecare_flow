@@ -3,6 +3,7 @@ import {
   LayoutDashboard, Users, UserRound, CalendarDays, Clock, ClipboardList, Wallet, PiggyBank, UserCog,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import BotaoInstalar from './BotaoInstalar';
 
 // Itens do menu separados por seção.
 // A seção com somenteGestao (Relatórios) não aparece para o técnico.
@@ -64,6 +65,7 @@ export default function Sidebar({ aberta, onNavegar }) {
           ))}
         </div>
       ))}
+      <BotaoInstalar />
     </nav>
   );
 }

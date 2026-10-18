@@ -132,6 +132,14 @@ Se quiser impressionar: abra o site no celular e leia o cartão impresso ou most
 
 ---
 
+### 3.6 Bônus: o app no celular (30 s, se der tempo)
+**Mostre:** o celular com o Home Care Flow **instalado na tela inicial** (ícone do coração).
+> "Como o cuidador usa o celular na casa do paciente, o sistema é um **PWA**: dá para instalar como
+> aplicativo, abre em tela cheia e funciona mesmo com internet ruim. No celular, as tabelas viram cartões."
+
+*Antes da apresentação: abra o site no celular → menu ☰ → **Instalar app**
+(no iPhone: Safari → Compartilhar → **Adicionar à Tela de Início**).*
+
 ## 4. Como foi construído (1 min 30)
 
 > "Tecnicamente, usei as três tecnologias da formação:"
