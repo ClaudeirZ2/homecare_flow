@@ -1188,6 +1188,399 @@ textarea.campo-controle {
 }
 
 /* ============================================================
+   VERSÃO 2: componentes novos
+   ============================================================ */
+
+/* Carregamento ("esqueleto" animado) */
+.esqueleto-linhas {
+  display: grid;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.esqueleto {
+  display: block;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef2f6 25%, #f8fafc 50%, #eef2f6 75%);
+  background-size: 200% 100%;
+  animation: brilho 1.2s ease-in-out infinite;
+}
+
+.esqueleto:nth-child(2) { width: 85%; }
+.esqueleto:nth-child(3) { width: 92%; }
+.esqueleto:nth-child(4) { width: 70%; }
+
+@keyframes brilho {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Abas (ex.: câmera / digitar no check-in) */
+.abas {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+
+.aba {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.aba.ativa {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+/* Leitor de QR Code */
+.leitor-qr {
+  width: 100%;
+  min-height: 260px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.leitor-qr video {
+  border-radius: var(--radius-md);
+}
+
+/* Cartão de QR Code para imprimir */
+.cartao-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 20px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.cartao-qr-imagem {
+  width: 220px;
+  height: 220px;
+  margin: 8px 0;
+}
+
+.cartao-qr-nome {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-dark);
+}
+
+.cartao-qr-dica {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  margin-top: 6px;
+}
+
+/* Alerta de distância no histórico de plantões */
+.alerta-distancia {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #fef2f2;
+  color: var(--color-danger-hover);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+/* Destaque do painel do técnico */
+.destaque {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  border: 1px solid #bfe9dd;
+  color: var(--color-accent-hover);
+}
+
+.destaque > div {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.destaque strong {
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-md);
+}
+
+.destaque span {
+  color: var(--color-text-muted);
+}
+
+.destaque-ativo {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: var(--color-warning);
+}
+
+.destaque-neutro {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-subtle);
+}
+
+/* Pontos de atenção (alertas da gestão) */
+.lista-alertas {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.alerta {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+}
+
+.alerta svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alerta div {
+  display: grid;
+}
+
+.alerta strong {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.alerta span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.alerta-perigo { background: #fef2f2; border-color: #fecaca; color: var(--color-danger-hover); }
+.alerta-aviso { background: #fffbeb; border-color: #fde68a; color: var(--color-warning); }
+
+/* Atividade recente (auditoria) */
+.linha-atividades {
+  list-style: none;
+  display: grid;
+}
+
+.linha-atividades li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.linha-atividades li:last-child {
+  border-bottom: none;
+}
+
+.atividade-icone {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #eef2f6;
+  color: var(--color-primary);
+}
+
+.acao-criou, .acao-checkin { background: var(--color-accent-soft); color: var(--color-accent-hover); }
+.acao-excluiu { background: #fef2f2; color: var(--color-danger); }
+.acao-pagou { background: #ecfdf5; color: var(--color-success); }
+.acao-checkout { background: #fffbeb; color: var(--color-warning); }
+
+.atividade-texto {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--font-size-sm);
+}
+
+.atividade-texto small {
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+/* Caixa de informação */
+.aviso-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: var(--font-size-sm);
+}
+
+.aviso-info svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Meu perfil */
+.perfil-cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.avatar-grande {
+  width: 72px;
+  height: 72px;
+  font-size: 1.5rem;
+}
+
+.perfil-cartao h2 {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-dark);
+}
+
+.perfil-dados {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+/* Página 404 */
+.pagina-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 80px 16px;
+  color: var(--color-text-subtle);
+}
+
+.pagina-404 h1 {
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-xl);
+}
+
+/* Demonstrativo de pagamento */
+.demonstrativo {
+  display: grid;
+  gap: 16px;
+}
+
+.demonstrativo-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-primary-dark);
+}
+
+.demonstrativo-dados {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.demonstrativo-dados div {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+}
+
+.demonstrativo-dados span:first-child {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tabela-compacta th,
+.tabela-compacta td {
+  padding: 8px 10px;
+  font-size: var(--font-size-sm);
+}
+
+.demonstrativo-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+}
+
+.demonstrativo-total strong {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-dark);
+}
+
+/* Avatar do topo virou link para o perfil */
+a.usuario-chip {
+  color: inherit;
+  border-radius: var(--radius-sm);
+}
+
+a.usuario-chip:hover .usuario-info strong {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   IMPRESSÃO: só sai a "area-impressao" (cartão de QR ou demonstrativo)
+   ============================================================ */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .area-impressao,
+  .area-impressao * {
+    visibility: visible;
+  }
+
+  .area-impressao {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none;
+  }
+
+  .nao-imprimir,
+  .toast-area {
+    display: none !important;
+  }
+}
+
+/* ============================================================
    RESPONSIVO
    ============================================================ */
 @media (max-width: 1100px) {
@@ -1248,21 +1641,21 @@ textarea.campo-controle {
     padding: 16px;
   }
 
-  .grid-cards-compacto {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-.grid-cards-compacto .stat-valor {
-  font-size: 1.35rem;
-  white-space: nowrap;
-}
-
-.grid-cards-compacto .stat-icone {
-  width: 30px;
-  height: 30px;
-}
-
-.grid-2 {
+  .grid-2 {
     grid-template-columns: 1fr;
+  }
+
+  .destaque {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .demonstrativo-dados {
+    grid-template-columns: 1fr;
+  }
+
+  .atividade-texto {
+    flex-direction: column;
+    gap: 2px;
   }
 }

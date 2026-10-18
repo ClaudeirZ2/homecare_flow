@@ -17,9 +17,9 @@ export default function Table({ colunas, dados, vazio = 'Nenhum registro encontr
           {(carregando || dados.length === 0) && (
             <tr>
               <td colSpan={colunas.length}>
-                <div className="vazio">
-                  {carregando ? 'Carregando...' : <><Inbox size={28} /><strong>{vazio}</strong></>}
-                </div>
+                {carregando
+                  ? <div className="esqueleto-linhas" aria-label="Carregando">{[1, 2, 3, 4].map((n) => <span key={n} className="esqueleto" />)}</div>
+                  : <div className="vazio"><Inbox size={28} /><strong>{vazio}</strong></div>}
               </td>
             </tr>
           )}

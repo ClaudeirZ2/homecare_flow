@@ -16,10 +16,10 @@ INSERT INTO usuarios (nome, email, senha_hash, tipo, telefone) VALUES
 ('Pedro Lima',     'pedro@homecareflow.com',    @senha, 'tecnico', '(66) 99999-0004'),
 ('Marta Oliveira', 'marta@homecareflow.com',    @senha, 'tecnico', '(66) 99999-0005');
 
-INSERT INTO pacientes (nome, idade, endereco, qr_code_id, responsavel_contato) VALUES
-('Antônio Ferreira', 78, 'Rua das Flores, 123 - Rondonópolis/MT', 'QR-PAC-0001', 'Luiza (filha) - (66) 98888-1111'),
-('Maria Helena',     82, 'Av. Brasil, 456 - Rondonópolis/MT',     'QR-PAC-0002', 'Roberto (filho) - (66) 98888-2222'),
-('José Carvalho',    69, 'Rua Goiás, 789 - Rondonópolis/MT',      'QR-PAC-0003', 'Sandra (esposa) - (66) 98888-3333');
+INSERT INTO pacientes (nome, idade, endereco, qr_code_id, responsavel_contato, latitude, longitude) VALUES
+('Antônio Ferreira', 78, 'Rua das Flores, 123 - Rondonópolis/MT', 'QR-PAC-0001', 'Luiza (filha) - (66) 98888-1111', -16.4708000, -54.6356000),
+('Maria Helena',     82, 'Av. Brasil, 456 - Rondonópolis/MT',     'QR-PAC-0002', 'Roberto (filho) - (66) 98888-2222', -16.4673000, -54.6372000),
+('José Carvalho',    69, 'Rua Goiás, 789 - Rondonópolis/MT',      'QR-PAC-0003', 'Sandra (esposa) - (66) 98888-3333', -16.4590000, -54.6410000);
 
 INSERT INTO profissionais (usuario_id, especialidade, valor_hora, status_disponibilidade) VALUES
 (3, 'Técnica de Enfermagem', 18.50, 'disponivel'),
@@ -85,3 +85,21 @@ SELECT pl.id, ELT(1 + pl.id % 3, '12/8', '13/8', '11/7'), 66 + pl.id % 14, 36.0 
 FROM plantoes pl
 LEFT JOIN prontuarios pr ON pr.plantao_id = pl.id
 WHERE pl.status = 'finalizado' AND pr.id IS NULL;
+
+-- Distância do check-in por GPS (no histórico, todos dentro do raio da casa do paciente)
+UPDATE plantoes SET checkin_distancia_m = 15 + (id % 5) * 12 WHERE checkin_metodo = 'gps';
+
+-- Dois casos para a gestão conferir em "Pontos de atenção" (fica realista na demonstração):
+-- 1) um check-in por GPS feito a 2,4 km da casa do paciente
+UPDATE plantoes SET checkin_distancia_m = 2350
+WHERE id = (SELECT id FROM (SELECT MIN(id) AS id FROM plantoes WHERE checkin_metodo = 'gps' AND id > 3) AS x);
+-- 2) um plantão finalizado sem prontuário registrado
+DELETE FROM prontuarios
+WHERE plantao_id = (SELECT id FROM (SELECT MAX(id) AS id FROM plantoes WHERE status = 'finalizado' AND id > 3) AS x);
+
+-- Algumas linhas de auditoria para a tela de "Atividade recente" não começar vazia
+INSERT INTO auditoria (usuario_id, acao, entidade, entidade_id, descricao, criado_em) VALUES
+(2, 'criou',   'escala',   4, 'Escala de Antônio Ferreira para Juliana Rocha (manhã)', NOW() - INTERVAL 2 DAY),
+(2, 'criou',   'escala',   5, 'Escala de Maria Helena para Pedro Lima (noite)',         NOW() - INTERVAL 2 DAY),
+(4, 'checkout', 'plantao', 2, 'Check-out de Pedro Lima na casa de Maria Helena',        NOW() - INTERVAL 1 DAY),
+(5, 'checkout', 'plantao', 3, 'Check-out de Marta Oliveira na casa de José Carvalho',   NOW() - INTERVAL 1 DAY);

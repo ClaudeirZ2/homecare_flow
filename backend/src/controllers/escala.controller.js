@@ -2,6 +2,7 @@ const EscalaModel = require('../models/escala.model');
 const PacienteModel = require('../models/paciente.model');
 const ProfissionalModel = require('../models/profissional.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
+const registrarAuditoria = require('../utils/auditoria');
 
 const TURNOS = ['manha', 'tarde', 'noite', '12x36'];
 const STATUS = ['agendado', 'em_andamento', 'concluido', 'cancelado'];
@@ -76,7 +77,10 @@ const EscalaController = {
         return res.status(409).json({ erro: 'Este profissional já possui escala nesta data e turno.' });
       }
 
-      res.status(201).json(await EscalaModel.criar(dados));
+      const escala = await EscalaModel.criar(dados);
+      registrarAuditoria(req, 'criou', 'escala', escala.id,
+        `Escala de ${escala.paciente_nome} para ${escala.profissional_nome} em ${escala.data_prevista}`);
+      res.status(201).json(escala);
     } catch (err) {
       next(err);
     }
@@ -104,7 +108,10 @@ const EscalaController = {
         return res.status(409).json({ erro: 'Este profissional já possui escala nesta data e turno.' });
       }
 
-      res.json(await EscalaModel.atualizar(req.params.id, dados));
+      const escala = await EscalaModel.atualizar(req.params.id, dados);
+      registrarAuditoria(req, 'editou', 'escala', escala.id,
+        `Editou a escala de ${escala.paciente_nome} (${escala.data_prevista}, ${escala.status})`);
+      res.json(escala);
     } catch (err) {
       next(err);
     }
@@ -125,6 +132,8 @@ const EscalaController = {
       }
 
       await EscalaModel.remover(req.params.id);
+      registrarAuditoria(req, 'excluiu', 'escala', existente.id,
+        `Excluiu a escala de ${existente.paciente_nome} (${existente.data_prevista})`);
       res.status(204).send();
     } catch (err) {
       next(err);

@@ -49,13 +49,14 @@ const PlantaoModel = {
   },
 
   // Check-in: cria o plantão com a hora atual e a localização
-  async checkin({ escala, lat, lng, metodo }) {
+  async checkin({ escala, lat, lng, metodo, distancia = null }) {
     const id = await emTransacao(async (conn) => {
       const [result] = await conn.query(
         `INSERT INTO plantoes
-           (escala_id, profissional_id, paciente_id, checkin_hora, checkin_lat, checkin_lng, checkin_metodo, status)
-         VALUES (?, ?, ?, NOW(), ?, ?, ?, 'em_andamento')`,
-        [escala.id, escala.profissional_id, escala.paciente_id, lat ?? null, lng ?? null, metodo]
+           (escala_id, profissional_id, paciente_id, checkin_hora, checkin_lat, checkin_lng, checkin_metodo,
+            checkin_distancia_m, status)
+         VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, 'em_andamento')`,
+        [escala.id, escala.profissional_id, escala.paciente_id, lat ?? null, lng ?? null, metodo, distancia]
       );
 
       // A escala passa para "em andamento" e o profissional fica "em plantão"

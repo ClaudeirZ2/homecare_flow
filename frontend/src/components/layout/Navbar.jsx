@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Logo from './Logo';
@@ -18,13 +19,13 @@ export default function Navbar({ onAlternarMenu }) {
         <Logo />
       </div>
       <div className="navbar-direita">
-        <div className="usuario-chip">
+        <Link to="/perfil" className="usuario-chip" title="Meu perfil">
           <span className="avatar" aria-hidden="true">{iniciais(usuario?.nome)}</span>
           <div className="usuario-info">
             <strong>{usuario?.nome}</strong>
             <span>{rotulo(usuario?.tipo)}</span>
           </div>
-        </div>
+        </Link>
         <button type="button" className="btn-sair" onClick={logout} aria-label="Sair">
           <LogOut size={16} /> <span>Sair</span>
         </button>

@@ -72,13 +72,13 @@ Não precisa decorar.
 **Clique:** login com `admin@homecareflow.com` / `123456`.
 > "O sistema tem **perfis de acesso**: administrador e gestor cuidam da operação; o técnico faz os plantões."
 
-### 3.2 Visão Geral (40 s)
-**Mostre:** os cards, o gráfico, as barras e a agenda.
+### 3.2 Visão Geral (50 s)
+**Mostre:** os cards, o gráfico, os **pontos de atenção** e a **atividade recente**.
 > "Aqui é o painel da gestora:
-> - os **indicadores do dia**;
-> - o gráfico de **escalas previstas versus plantões realizados**;
-> - as **escalas por status**;
-> - e a **agenda de hoje**."
+> - os **indicadores do dia** e o gráfico de **escalas previstas versus plantões realizados**;
+> - os **pontos de atenção**: o sistema mostra sozinho que um check-in foi feito a 2,4 km da casa
+>   do paciente e que um plantão terminou sem prontuário;
+> - e embaixo a **atividade recente**, que é a auditoria: quem fez o quê e quando. Isso é importante para a LGPD."
 
 ### 3.3 CRUD de Escalas (1 min 30) ⭐ requisito obrigatório
 1. **Nova escala:** escolha paciente, profissional, uma data futura e o turno, depois **Criar**.
@@ -95,7 +95,12 @@ Não precisa decorar.
 > "E não é só Escalas: **Pacientes** e **Cuidadores** também têm CRUD completo."
 *(Se sobrar tempo, mostre o cadastro de um cuidador: ele já cria o login do profissional.)*
 
-### 3.4 Financeiro (40 s)
+### 3.3b Cartão de QR Code (20 s)
+**Clique:** Pacientes → ícone de QR no card do Antônio.
+> "Para cada paciente o sistema gera um **cartão com QR Code** para imprimir e colar na casa.
+> É ele que o cuidador vai ler com o celular na chegada."
+
+### 3.4 Financeiro (50 s)
 **Clique:** Relatórios.
 > "No fim do mês, o sistema soma as **horas reais** de cada plantão e multiplica pelo valor da hora."
 
@@ -104,12 +109,19 @@ Não precisa decorar.
 
 ### 3.5 Visão da técnica (1 min 30)
 **Clique:** Sair. Entre com `juliana@homecareflow.com` / `123456`.
-> "Agora eu sou a Juliana, técnica de enfermagem. Reparem que ela **não vê o financeiro**,
-> e só enxerga **as escalas dela**."
+> "Agora eu sou a Juliana, técnica de enfermagem. O painel dela é diferente: o **Meu dia** mostra
+> o plantão de hoje, as próximas escalas e **quanto ela já tem a receber no mês**.
+> Ela **não vê o financeiro** da empresa, só os ganhos dela."
 
-**Clique:** Plantões → **QR Code** na escala de hoje → digite `QR-PAC-0001` → Confirmar.
-> "Ela chega na casa do paciente e faz o **check-in pelo QR Code** que fica na residência.
-> Se o código não for daquela casa, o sistema recusa."
+**Clique:** Meus ganhos.
+> "Esse é o coração da ODS 8: a profissional **acompanha as próprias horas e o valor**,
+> calculado automaticamente. Ela não depende de papel nem de combinado por WhatsApp."
+
+**Clique:** Plantões → **QR Code** na escala de hoje.
+> "Ela chega na casa do paciente e faz o **check-in lendo o QR Code com a câmera do celular**."
+*(No notebook: use a aba **Digitar código** → `QR-PAC-0001` → Confirmar.
+Se quiser impressionar: abra o site no celular e leia o cartão impresso ou mostrado na tela do notebook.)*
+> "Se o código não for daquela casa, o sistema recusa."
 *(Opcional: digite antes `QR-PAC-0002` para mostrar o erro.)*
 
 **Clique:** Prontuários → escolha o plantão "em andamento" → preencha pressão, temperatura e observação → Registrar.
@@ -124,17 +136,18 @@ Não precisa decorar.
 
 > "Tecnicamente, usei as três tecnologias da formação:"
 
-> "**MySQL**, com **7 tabelas relacionadas**: usuários, profissionais, pacientes, escalas, plantões,
-> prontuários e pagamentos. Uso **chaves estrangeiras** e **transações**: no check-in, três tabelas
+> "**MySQL**, com **8 tabelas relacionadas**: usuários, profissionais, pacientes, escalas, plantões,
+> prontuários, pagamentos e **auditoria**, que registra quem fez o quê. Uso **chaves estrangeiras** e **transações**: no check-in, três tabelas
 > mudam juntas; se uma falhar, nada é gravado."
 
-> "**Node.js com Express**, numa **API REST** organizada em camadas:
+> "**Node.js com Express**, numa **API REST** documentada com **Swagger**, organizada em camadas:
 > - rotas;
 > - middlewares de **login com JWT** e permissão por perfil;
 > - controllers com as validações;
 > - models com o SQL.
 
-> As senhas ficam criptografadas com **bcrypt**."
+> As senhas ficam criptografadas com **bcrypt**, o login tem **limite de tentativas**
+> e o backend tem **testes automatizados**."
 
 > "**React**, todo **componentizado**: Navbar, Cards, Formulários, Botões, Tabelas, Modais e Footer são
 > componentes reutilizáveis, e cada módulo tem a sua pasta."
@@ -190,8 +203,20 @@ Não precisa decorar.
 > termo de consentimento e registro de quem acessou cada prontuário."
 
 **"Como o GPS impede fraude?"**
-> "Hoje eu gravo a localização da entrada e da saída. O próximo passo é comparar com o endereço do
-> paciente e só aceitar dentro de um raio. O QR Code já garante isso: o código fica colado na casa."
+> "No check-in por GPS, a API calcula a distância até a casa do paciente com a fórmula de Haversine.
+> Acima de 300 metros o check-in não é bloqueado, porque o GPS do celular às vezes erra, mas ele
+> vira um **alerta** no painel da gestão. E o QR Code garante a presença: o cartão fica colado na casa."
+
+**"O que é essa auditoria?"**
+> "É uma tabela que guarda quem fez cada ação e quando: login, cadastro, check-in, pagamento.
+> Se alguém perguntar 'quem mudou essa escala?', o sistema responde. Isso é rastreabilidade, e a LGPD cobra isso."
+
+**"Tem testes?"**
+> "Tem. O `npm test` roda testes automatizados do backend: autenticação, permissões, tratamento de
+> erros e o cálculo da distância. E eu testei todas as telas de ponta a ponta no navegador."
+
+**"Onde está a documentação da API?"**
+> "Em `/api/docs`. É o Swagger: lista todas as rotas, e dá para testar direto pelo navegador."
 
 **"Por que React com Vite e não outra coisa?"**
 > "Foi o que estudamos na formação. O Vite deixa o desenvolvimento rápido, e os componentes me

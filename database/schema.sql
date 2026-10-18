@@ -34,6 +34,8 @@ CREATE TABLE pacientes (
   endereco             VARCHAR(255),
   qr_code_id           VARCHAR(100) UNIQUE,         -- identificador do QR Code fixado na residência
   responsavel_contato  VARCHAR(150),
+  latitude             DECIMAL(10,7),               -- localização da casa (para conferir o GPS do check-in)
+  longitude            DECIMAL(10,7),
   observacoes_gerais   TEXT,
   ativo                BOOLEAN DEFAULT TRUE,
   criado_em            DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -84,6 +86,7 @@ CREATE TABLE plantoes (
   checkin_lat       DECIMAL(10,7),
   checkin_lng       DECIMAL(10,7),
   checkin_metodo    ENUM('gps', 'qrcode'),
+  checkin_distancia_m INT NULL,                  -- distância (em metros) entre o check-in e a casa do paciente
   checkout_hora     DATETIME,
   checkout_lat      DECIMAL(10,7),
   checkout_lng      DECIMAL(10,7),
@@ -129,8 +132,23 @@ CREATE TABLE pagamentos (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
+-- AUDITORIA: registro de quem fez o quê e quando (LGPD / rastreabilidade)
+-- ------------------------------------------------------------
+CREATE TABLE auditoria (
+  id           INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id   INT NULL,
+  acao         VARCHAR(40) NOT NULL,            -- ex.: login, criou, editou, excluiu, checkin, checkout
+  entidade     VARCHAR(40) NOT NULL,            -- ex.: escala, paciente, plantao
+  entidade_id  INT NULL,
+  descricao    VARCHAR(255),
+  criado_em    DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
 -- Índices auxiliares para consultas frequentes
 -- ------------------------------------------------------------
 CREATE INDEX idx_escalas_data ON escalas(data_prevista);
 CREATE INDEX idx_plantoes_profissional ON plantoes(profissional_id);
 CREATE INDEX idx_pagamentos_mes ON pagamentos(mes_referencia);
+CREATE INDEX idx_auditoria_data ON auditoria(criado_em);

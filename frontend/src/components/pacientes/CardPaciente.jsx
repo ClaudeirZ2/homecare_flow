@@ -1,10 +1,10 @@
-import { MapPin, Phone, QrCode, Pencil, Trash2 } from 'lucide-react';
+import { MapPin, Phone, QrCode, Pencil, Trash2, Navigation } from 'lucide-react';
 import Button from '../ui/Button';
 
 const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 // Card de cada paciente com endereço, contato, código do QR e os botões de editar/excluir
-export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir }) {
+export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir, onVerQr }) {
   return (
     <article className="card paciente-card">
       <div className="paciente-topo">
@@ -18,6 +18,10 @@ export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir
       <div style={{ display: 'grid', gap: 6 }}>
         <p className="info-linha"><MapPin size={14} /> {paciente.endereco || 'Endereço não informado'}</p>
         <p className="info-linha"><Phone size={14} /> {paciente.responsavel_contato || 'Sem responsável cadastrado'}</p>
+        <p className="info-linha">
+          <Navigation size={14} />
+          {paciente.latitude != null ? 'Localização cadastrada (confere o GPS do check-in)' : 'Sem localização cadastrada'}
+        </p>
       </div>
 
       <div className="card-rodape">
@@ -26,6 +30,7 @@ export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir
         </span>
         {podeEditar && (
           <div className="acoes">
+            <Button size="sm" variant="ghost" icone={QrCode} titulo="Ver e imprimir QR Code" onClick={() => onVerQr(paciente)} />
             <Button size="sm" variant="ghost" icone={Pencil} titulo="Editar" onClick={() => onEditar(paciente)} />
             <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(paciente)} />
           </div>

@@ -12,7 +12,7 @@ import { plantaoService } from '../services/plantaoService';
 import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { formatarData, hojeISO, rotulo } from '../utils/formatters';
+import { formatarData, formatarDistancia, hojeISO, rotulo } from '../utils/formatters';
 
 // Tela de check-in e check-out. O técnico só recebe as escalas dele (o filtro é feito na API).
 export default function Plantoes() {
@@ -44,8 +44,12 @@ export default function Plantoes() {
   async function executar(acao, mensagemSucesso) {
     setSalvando(true);
     try {
-      await acao();
+      const resultado = await acao();
       toast.sucesso(mensagemSucesso);
+      // A API avisa quando o GPS do check-in ficou longe da casa do paciente
+      if (resultado?.fora_do_raio) {
+        toast.erro(`Atenção: check-in a ${formatarDistancia(resultado.checkin_distancia_m)} da residência. A gestão será alertada.`);
+      }
       setEscalaQr(null);
       carregar();
     } catch (err) {

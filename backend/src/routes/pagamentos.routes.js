@@ -6,6 +6,7 @@ const { autenticar, permitirTipos } = require('../middlewares/auth.middleware');
 router.use(autenticar);
 
 router.get('/relatorio/:mes', permitirTipos('admin', 'gestor'), PagamentoController.gerarRelatorioMensal);
+router.get('/meus', PagamentoController.meusGanhos);
 router.get('/profissional/:id', PagamentoController.listarPorProfissional);
 router.put('/:id/pagar', permitirTipos('admin', 'gestor'), PagamentoController.marcarComoPago);
 

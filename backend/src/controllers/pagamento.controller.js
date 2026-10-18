@@ -1,5 +1,6 @@
 const PagamentoModel = require('../models/pagamento.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
+const registrarAuditoria = require('../utils/auditoria');
 
 const MES_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
 
@@ -19,6 +20,28 @@ const PagamentoController = {
       }
 
       res.json(await PagamentoModel.listarPorMes(mes));
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  // GET /api/pagamentos/meus?mes=2026-10 — "Meus ganhos" do técnico logado:
+  // resumo do mês (calculado na hora) + histórico de fechamentos e se já foram pagos
+  async meusGanhos(req, res, next) {
+    try {
+      const profissional_id = req.usuario.profissional_id;
+      if (!profissional_id) {
+        return res.status(400).json({ erro: 'Seu usuário não está ligado a um profissional.' });
+      }
+      const hoje = new Date();
+      const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      const mes = MES_REGEX.test(req.query.mes || '') ? req.query.mes : mesAtual;
+
+      const [resumo, historico] = await Promise.all([
+        PagamentoModel.resumoDoMes(profissional_id, mes),
+        PagamentoModel.listarPorProfissional(profissional_id),
+      ]);
+      res.json({ mes, resumo, historico });
     } catch (err) {
       next(err);
     }
@@ -47,6 +70,8 @@ const PagamentoController = {
       }
 
       await PagamentoModel.marcarComoPago(req.params.id);
+      registrarAuditoria(req, 'pagou', 'pagamento', pagamento.id,
+        `Pagamento de ${pagamento.mes_referencia} (R$ ${Number(pagamento.valor_total).toFixed(2)})`);
       res.json(await PagamentoModel.buscarPorId(req.params.id));
     } catch (err) {
       next(err);
