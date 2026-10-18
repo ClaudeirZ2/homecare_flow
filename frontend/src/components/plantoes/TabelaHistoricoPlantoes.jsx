@@ -1,7 +1,9 @@
-import { FileCheck2, MapPin, QrCode } from 'lucide-react';
+import { AlertTriangle, FileCheck2, MapPin, QrCode } from 'lucide-react';
 import Table from '../ui/Table';
 import Badge from '../ui/Badge';
-import { formatarData, formatarDataHora, formatarHoras } from '../../utils/formatters';
+import { formatarData, formatarDataHora, formatarDistancia, formatarHoras } from '../../utils/formatters';
+
+const RAIO_PERMITIDO_M = 300;
 
 // Histórico dos plantões: horário de entrada e saída, se foi por GPS ou QR, e as horas
 export default function TabelaHistoricoPlantoes({ plantoes, mostrarProfissional }) {
@@ -15,6 +17,11 @@ export default function TabelaHistoricoPlantoes({ plantoes, mostrarProfissional 
         <span className="info-linha" style={{ color: 'var(--color-text)' }}>
           {p.checkin_metodo === 'qrcode' ? <QrCode size={14} /> : <MapPin size={14} />}
           <span className="numero">{formatarDataHora(p.checkin_hora)}</span>
+          {p.checkin_distancia_m > RAIO_PERMITIDO_M && (
+            <span className="alerta-distancia" title="Check-in feito longe da residência">
+              <AlertTriangle size={12} /> {formatarDistancia(p.checkin_distancia_m)}
+            </span>
+          )}
         </span>
       ),
     },

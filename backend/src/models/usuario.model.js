@@ -24,6 +24,15 @@ const UsuarioModel = {
     return rows[0];
   },
 
+  async buscarHashSenha(id) {
+    const [rows] = await pool.query('SELECT senha_hash FROM usuarios WHERE id = ?', [id]);
+    return rows[0]?.senha_hash;
+  },
+
+  async atualizarSenha(id, senha_hash) {
+    await pool.query('UPDATE usuarios SET senha_hash = ? WHERE id = ?', [senha_hash, id]);
+  },
+
   // O parâmetro conn é para conseguir usar esse método dentro de uma transação
   async criar({ nome, email, senha_hash, tipo, telefone }, conn = pool) {
     const [result] = await conn.query(

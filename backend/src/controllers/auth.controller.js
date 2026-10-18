@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const UsuarioModel = require('../models/usuario.model');
 const { gerarToken } = require('../utils/jwt');
+const registrarAuditoria = require('../utils/auditoria');
 
 const TIPOS_VALIDOS = ['admin', 'gestor', 'tecnico'];
 
@@ -56,8 +57,36 @@ const AuthController = {
 
       const token = gerarToken(usuario);
       delete usuario.senha_hash;
+      registrarAuditoria({ usuario }, 'login', 'usuario', usuario.id, `${usuario.nome} entrou no sistema`);
 
       return res.json({ usuario, token });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  // PUT /api/auth/senha — a própria pessoa troca a senha (precisa informar a senha atual)
+  async alterarSenha(req, res, next) {
+    try {
+      const { senhaAtual, novaSenha } = req.body;
+      if (!senhaAtual || !novaSenha) {
+        return res.status(400).json({ erro: 'Informe a senha atual e a nova senha.' });
+      }
+      if (novaSenha.length < 6) {
+        return res.status(400).json({ erro: 'A nova senha deve ter pelo menos 6 caracteres.' });
+      }
+      if (novaSenha === senhaAtual) {
+        return res.status(400).json({ erro: 'A nova senha precisa ser diferente da atual.' });
+      }
+
+      const hashAtual = await UsuarioModel.buscarHashSenha(req.usuario.id);
+      if (!hashAtual || !(await bcrypt.compare(senhaAtual, hashAtual))) {
+        return res.status(400).json({ erro: 'A senha atual está incorreta.' });
+      }
+
+      await UsuarioModel.atualizarSenha(req.usuario.id, await bcrypt.hash(novaSenha, 10));
+      registrarAuditoria(req, 'editou', 'usuario', req.usuario.id, 'Alterou a própria senha');
+      res.json({ mensagem: 'Senha alterada com sucesso.' });
     } catch (err) {
       next(err);
     }

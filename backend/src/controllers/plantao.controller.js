@@ -2,6 +2,8 @@ const PlantaoModel = require('../models/plantao.model');
 const EscalaModel = require('../models/escala.model');
 const PacienteModel = require('../models/paciente.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
+const registrarAuditoria = require('../utils/auditoria');
+const { distanciaEmMetros, RAIO_PERMITIDO_M } = require('../utils/geo');
 
 // Confere se a localização faz sentido (latitude entre -90 e 90, longitude entre -180 e 180)
 function coordenadasValidas(lat, lng) {
@@ -59,17 +61,30 @@ const PlantaoController = {
       if (metodo === 'gps' && !coordenadasValidas(lat, lng)) {
         return res.status(400).json({ erro: 'Localização GPS inválida ou não informada.' });
       }
+      const paciente = await PacienteModel.buscarPorId(escala.paciente_id);
+
       if (metodo === 'qrcode') {
         // O código digitado/lido tem que ser o QR Code da casa DESTE paciente.
         // É isso que prova que o profissional estava mesmo no endereço.
-        const paciente = await PacienteModel.buscarPorId(escala.paciente_id);
         if (!paciente || codigo?.trim().toUpperCase() !== paciente.qr_code_id.toUpperCase()) {
           return res.status(400).json({ erro: 'QR Code não corresponde à residência deste paciente.' });
         }
       }
 
-      const plantao = await PlantaoModel.checkin({ escala, lat, lng, metodo });
-      res.status(201).json(plantao);
+      // No GPS eu calculo a distância até a casa do paciente (se ela tiver localização cadastrada).
+      // Não bloqueio o check-in porque o GPS do celular pode errar, mas fica registrado
+      // e aparece como alerta para a gestão conferir.
+      let distancia = null;
+      if (metodo === 'gps' && paciente?.latitude != null && paciente?.longitude != null) {
+        distancia = distanciaEmMetros(Number(lat), Number(lng), Number(paciente.latitude), Number(paciente.longitude));
+      }
+
+      const plantao = await PlantaoModel.checkin({ escala, lat, lng, metodo, distancia });
+      const foraDoRaio = distancia !== null && distancia > RAIO_PERMITIDO_M;
+      registrarAuditoria(req, 'checkin', 'plantao', plantao.id,
+        `Check-in (${metodo === 'qrcode' ? 'QR Code' : 'GPS'}) na casa de ${escala.paciente_nome}`
+        + (foraDoRaio ? ` — ALERTA: ${distancia} m do endereço` : ''));
+      res.status(201).json({ ...plantao, fora_do_raio: foraDoRaio, raio_permitido_m: RAIO_PERMITIDO_M });
     } catch (err) {
       next(err);
     }
@@ -89,7 +104,10 @@ const PlantaoController = {
 
       const { lat, lng } = req.body;
       const coords = coordenadasValidas(lat, lng) ? { lat, lng } : {};
-      res.json(await PlantaoModel.checkout(plantao, coords));
+      const finalizado = await PlantaoModel.checkout(plantao, coords);
+      registrarAuditoria(req, 'checkout', 'plantao', plantao.id,
+        `Check-out na casa de ${plantao.paciente_nome} (${finalizado.horas_trabalhadas} h)`);
+      res.json(finalizado);
     } catch (err) {
       next(err);
     }

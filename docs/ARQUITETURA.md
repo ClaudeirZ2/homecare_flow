@@ -32,6 +32,7 @@ Uma requisição passa por estas etapas, nesta ordem:
 | escalas → plantoes | 1 : 1 | `plantoes.escala_id` é único (uma escala gera no máximo um plantão) |
 | plantoes → prontuarios | 1 : N | |
 | profissionais → pagamentos | 1 : N | único por profissional + mês |
+| usuarios → auditoria | 1 : N | quem fez a ação (fica `NULL` se o usuário for apagado) |
 
 ## Fluxo principal
 
@@ -40,7 +41,10 @@ Uma requisição passa por estas etapas, nesta ordem:
    A API não deixa o mesmo profissional em duas escalas no mesmo dia e turno.
 3. No dia da escala, o profissional faz o **check-in**:
    - por **GPS**: grava a latitude e a longitude;
-   - ou por **QR Code**: o código precisa ser o da casa daquele paciente.
+   - ou por **QR Code**: o código precisa ser o da casa daquele paciente. Dá para ler com a câmera do celular.
+
+   No GPS, a API calcula a **distância até a casa** (fórmula de Haversine). Acima de 300 m o check-in
+   não é bloqueado, porque o GPS do celular pode errar, mas fica registrado e vira um **alerta** no painel da gestão.
 
    Isso cria o **plantão**, a escala passa para `em_andamento` e o profissional para `em_plantao`.
    Tudo numa **transação**.
@@ -56,6 +60,11 @@ Uma requisição passa por estas etapas, nesta ordem:
 - **Técnico** só vê e mexe nas próprias escalas e plantões. A regra está na API, não só na tela.
 - **Check-in** só é liberado no dia da escala.
 
+## Auditoria
+Toda ação importante grava uma linha na tabela `auditoria`: login, criar/editar/excluir cadastros e escalas,
+check-in, check-out, prontuário e pagamento. O registro é "fire and forget": se falhar, não atrapalha a ação
+principal. A gestão vê as últimas ações em "Atividade recente".
+
 ## Segurança
 - Senhas guardadas com **bcrypt** (hash, nunca o texto da senha).
 - Login com **JWT**, que expira em 8h. O token leva `id`, `tipo` e `profissional_id`.
@@ -63,10 +72,17 @@ Uma requisição passa por estas etapas, nesta ordem:
 - Erros internos não mostram detalhes do banco.
 - `.env` fora do GitHub. Na nuvem, as senhas ficam nas variáveis do Render.
 - **CORS** restrito ao endereço do frontend na nuvem.
+- **Limite de tentativas de login:** 10 erros a cada 15 minutos por IP (`express-rate-limit`).
+- Cabeçalhos HTTP de segurança com `helmet`.
+- Troca de senha exige a senha atual.
 
 ## Datas e fuso horário
 - Colunas `DATE` voltam como texto `AAAA-MM-DD` (`dateStrings`), para o dia não "voltar um" na tela.
 - As conexões com o MySQL usam o fuso `-03:00`, porque os servidores na nuvem usam UTC.
+
+## Testes
+- `npm test` no backend roda os testes automatizados (`node:test`, sem dependência extra).
+- Os testes de ponta a ponta (navegador) cobrem login, os três CRUDs, check-in, prontuário, financeiro e os perfis.
 
 ## Convenções do código
 - Nomes em português, seguindo o domínio do problema (escala, plantão, prontuário).

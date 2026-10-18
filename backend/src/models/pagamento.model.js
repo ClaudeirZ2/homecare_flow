@@ -51,6 +51,25 @@ const PagamentoModel = {
     return rows;
   },
 
+  // Resumo do mês de UM profissional, calculado na hora (antes do fechamento oficial).
+  // É o que o técnico vê em "Meus ganhos".
+  async resumoDoMes(profissional_id, mes_referencia) {
+    const [rows] = await pool.query(
+      `SELECT
+         COUNT(pl.id) AS qtd_plantoes,
+         COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, pl.checkin_hora, pl.checkout_hora)) / 60, 2), 0) AS horas,
+         COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, pl.checkin_hora, pl.checkout_hora) / 60 * prof.valor_hora), 2), 0) AS valor,
+         prof.valor_hora
+       FROM profissionais prof
+       LEFT JOIN plantoes pl ON pl.profissional_id = prof.id AND pl.status = 'finalizado'
+            AND DATE_FORMAT(pl.checkin_hora, '%Y-%m') = ?
+       WHERE prof.id = ?
+       GROUP BY prof.id, prof.valor_hora`,
+      [mes_referencia, profissional_id]
+    );
+    return rows[0];
+  },
+
   async listarPorProfissional(profissional_id) {
     const [rows] = await pool.query(
       'SELECT * FROM pagamentos WHERE profissional_id = ? ORDER BY mes_referencia DESC',

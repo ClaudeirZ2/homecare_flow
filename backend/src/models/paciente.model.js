@@ -13,20 +13,21 @@ const PacienteModel = {
     return rows[0];
   },
 
-  async criar({ nome, idade, endereco, qr_code_id, responsavel_contato, observacoes_gerais }) {
+  async criar({ nome, idade, endereco, qr_code_id, responsavel_contato, latitude, longitude, observacoes_gerais }) {
     const [result] = await pool.query(
-      `INSERT INTO pacientes (nome, idade, endereco, qr_code_id, responsavel_contato, observacoes_gerais)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [nome, idade, endereco, qr_code_id, responsavel_contato, observacoes_gerais]
+      `INSERT INTO pacientes (nome, idade, endereco, qr_code_id, responsavel_contato, latitude, longitude, observacoes_gerais)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [nome, idade, endereco, qr_code_id, responsavel_contato, latitude, longitude, observacoes_gerais]
     );
     return this.buscarPorId(result.insertId);
   },
 
-  async atualizar(id, { nome, idade, endereco, responsavel_contato, observacoes_gerais }) {
+  async atualizar(id, { nome, idade, endereco, responsavel_contato, latitude, longitude, observacoes_gerais }) {
     await pool.query(
-      `UPDATE pacientes SET nome = ?, idade = ?, endereco = ?, responsavel_contato = ?, observacoes_gerais = ?
+      `UPDATE pacientes SET nome = ?, idade = ?, endereco = ?, responsavel_contato = ?,
+              latitude = ?, longitude = ?, observacoes_gerais = ?
        WHERE id = ?`,
-      [nome, idade, endereco, responsavel_contato, observacoes_gerais, id]
+      [nome, idade, endereco, responsavel_contato, latitude, longitude, observacoes_gerais, id]
     );
     return this.buscarPorId(id);
   },

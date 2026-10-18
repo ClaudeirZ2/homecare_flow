@@ -13,7 +13,8 @@ Gestão de escalas, plantões e pagamentos para equipes de cuidado domiciliar.</
 <p align="center">
   🌐 <b>Acesse o sistema:</b> <a href="https://homecare-flow.vercel.app">https://homecare-flow.vercel.app</a><br/>
   ⚙️ API: <a href="https://homecare-flow.onrender.com">https://homecare-flow.onrender.com</a>
-  · Login de teste: <code>admin@homecareflow.com</code> / <code>123456</code>
+  · Login de teste: <code>admin@homecareflow.com</code> / <code>123456</code><br/>
+  📘 Documentação interativa da API: <a href="https://homecare-flow.onrender.com/api/docs">/api/docs</a>
 </p>
 
 ---
@@ -80,16 +81,27 @@ Quem mais perde com isso é o profissional, que não tem como comprovar as horas
 | **Escalas** (CRUD completo) | Cria, lista, filtra, edita e exclui escalas. Impede o mesmo profissional em duas escalas no mesmo dia e turno. | Admin / Gestor |
 | **Pacientes** (CRUD completo) | Cadastro com busca. Cada paciente recebe um **código de QR Code** para a residência. | Admin / Gestor |
 | **Cuidadores** (CRUD completo) | O cadastro já cria o **login do profissional** (usuário + profissional numa transação). | Admin / Gestor |
-| **Plantões** | **Check-in** por GPS ou QR Code (só no dia da escala) e **check-out**. Histórico com horas. | Técnico (e gestão) |
+| **QR Code da residência** | Gera o **cartão com QR Code** de cada paciente para imprimir e fixar na casa. | Admin / Gestor |
+| **Plantões** | **Check-in** lendo o QR Code com a **câmera do celular** (ou digitando o código) ou por **GPS**, com **cálculo da distância até a casa**. Check-out e histórico com horas. Check-in só no dia da escala. | Técnico (e gestão) |
 | **Prontuário** | Registro padronizado do plantão (sinais vitais, medicação, intercorrências) e linha do tempo do paciente. | Técnico (e gestão) |
-| **Financeiro** | Fechamento do mês (plantões, horas, valor), **marcar como pago** e **exportar CSV**. | Admin / Gestor |
-| **Visão Geral** | Indicadores, gráfico de atividade, escalas por status e agenda do dia. | Todos |
+| **Financeiro** | Fechamento do mês (plantões, horas, valor), **marcar como pago**, **demonstrativo de pagamento** (imprimir/PDF) e **exportar CSV**. | Admin / Gestor |
+| **Meus ganhos** | O profissional vê **quanto já tem a receber no mês**, calculado pelas horas reais, e o histórico de pagamentos. | Técnico |
+| **Visão Geral** | Indicadores, gráfico de atividade, escalas por status, agenda do dia, **pontos de atenção** (check-in longe da casa, plantão sem prontuário) e **atividade recente** (auditoria). | Admin / Gestor |
+| **Meu dia** | Painel do técnico: plantão de hoje em destaque, próximas escalas e ganhos do mês. | Técnico |
+| **Meu perfil** | Dados da conta e **troca de senha**. | Todos |
+| **App no celular (PWA)** | Pode ser **instalado na tela inicial** do celular, abre em tela cheia, carrega rápido e não fica em branco sem internet. No celular, as tabelas viram cartões fáceis de tocar. | Todos |
 
 **Perfis de acesso:**
 - **Admin/Gestor:** cadastram, montam as escalas e acessam o financeiro.
 - **Técnico:** vê só as escalas e plantões dele.
 
 A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um técnico não acessa dados de outro.
+
+**Segurança e rastreabilidade (LGPD):**
+- senhas com bcrypt e login com JWT;
+- **limite de tentativas de login** (10 a cada 15 minutos por IP), contra quem tenta adivinhar senhas;
+- cabeçalhos HTTP de segurança (`helmet`) e CORS restrito ao site oficial;
+- tabela de **auditoria** que registra quem fez o quê e quando (login, cadastros, check-in, pagamento).
 
 ## 4. Telas
 
@@ -98,6 +110,10 @@ A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um té
 | ![Login](docs/telas/login.png) | ![Visão Geral](docs/telas/dashboard.png) |
 | **Escalas (CRUD)** | **Plantões (técnica)** |
 | ![Escalas](docs/telas/escalas.png) | ![Plantões](docs/telas/plantoes.png) |
+| **Meu dia (técnica)** | **Meus ganhos (técnica)** |
+| ![Meu dia](docs/telas/meu-dia.png) | ![Meus ganhos](docs/telas/meus-ganhos.png) |
+| **Cartão de QR Code** | **Demonstrativo de pagamento** |
+| ![QR Code](docs/telas/cartao-qr.png) | ![Demonstrativo](docs/telas/demonstrativo.png) |
 | **Financeiro** | **Celular** |
 | ![Financeiro](docs/telas/financeiro.png) | ![Celular](docs/telas/celular.png) |
 
@@ -105,9 +121,10 @@ A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um té
 
 | Camada | Tecnologia |
 |---|---|
-| Banco de dados | **MySQL 8** (7 tabelas relacionadas, chaves estrangeiras, transações) |
-| Backend | **Node.js + Express**, `mysql2`, `jsonwebtoken` (JWT), `bcryptjs`, `cors`, `dotenv` |
-| Frontend | **ReactJS** (Vite), React Router, Axios, Recharts (gráfico), Lucide (ícones) |
+| Banco de dados | **MySQL 8** (8 tabelas relacionadas, chaves estrangeiras, transações) |
+| Backend | **Node.js + Express**, `mysql2`, `jsonwebtoken` (JWT), `bcryptjs`, `helmet`, `express-rate-limit`, `swagger-ui-express` |
+| Frontend | **ReactJS** (Vite), React Router, Axios, Recharts (gráfico), Lucide (ícones), `qrcode` (gerar QR), `html5-qrcode` (ler pela câmera) |
+| Testes | `node:test` (testes automatizados do backend) e testes de ponta a ponta na interface |
 | Nuvem | **Aiven** (MySQL), **Render** (API), **Vercel** (frontend) |
 
 ## 6. Arquitetura
@@ -116,7 +133,7 @@ A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um té
 ┌──────────────────────┐   HTTP + JWT    ┌────────────────────────┐   SQL    ┌──────────────┐
 │ React (Vercel)       │ ──────────────▶ │ API Node/Express       │ ───────▶ │ MySQL        │
 │ pages → components   │ ◀────────────── │ routes → middlewares   │ ◀─────── │ (Aiven)      │
-│ → services (axios)   │      JSON       │ → controllers → models │          │ 7 tabelas    │
+│ → services (axios)   │      JSON       │ → controllers → models │          │ 8 tabelas    │
 └──────────────────────┘                 └────────────────────────┘          └──────────────┘
 ```
 
@@ -163,17 +180,19 @@ erDiagram
     escalas ||--o| plantoes : "vira"
     plantoes ||--o{ prontuarios : "registra"
     profissionais ||--o{ pagamentos : "recebe"
+    usuarios ||--o{ auditoria : "realiza"
 ```
 
 | Tabela | Para que serve |
 |---|---|
 | `usuarios` | Login (admin, gestor, técnico) com senha criptografada (bcrypt) |
 | `profissionais` | Dados de trabalho do cuidador: especialidade, valor/hora, disponibilidade |
-| `pacientes` | Quem recebe o atendimento + código do QR Code da residência |
+| `pacientes` | Quem recebe o atendimento + código do QR Code e localização da residência |
 | `escalas` | Planejamento: paciente + profissional + data + turno + status |
-| `plantoes` | Execução real da escala: horários e local de check-in/check-out |
+| `plantoes` | Execução real da escala: horários, local e **distância até a casa** no check-in |
 | `prontuarios` | Registro padronizado de cada plantão |
 | `pagamentos` | Fechamento mensal por profissional (único por profissional + mês) |
+| `auditoria` | Registro de quem fez o quê e quando (rastreabilidade / LGPD) |
 
 Scripts: [database/schema.sql](database/schema.sql) (estrutura) e [database/seed.sql](database/seed.sql)
 (dados de demonstração com 10 dias de histórico).
@@ -182,10 +201,14 @@ Scripts: [database/schema.sql](database/schema.sql) (estrutura) e [database/seed
 
 Todas as rotas (menos o login) exigem o cabeçalho `Authorization: Bearer <token>`.
 
+📘 **Documentação interativa (Swagger):** `http://localhost:5000/api/docs` no PC ou
+https://homecare-flow.onrender.com/api/docs na nuvem. Dá para testar cada rota pelo navegador.
+
 | Método | Rota | Descrição | Perfil |
 |---|---|---|---|
 | POST | `/api/auth/login` | Login, devolve o token JWT | público |
 | GET | `/api/auth/me` | Dados do usuário logado | todos |
+| PUT | `/api/auth/senha` | Troca a própria senha | todos |
 | GET | `/api/escalas?status=&data=` | Lista escalas (técnico: só as dele) | todos |
 | GET | `/api/escalas/:id` | Detalha uma escala | todos |
 | POST | `/api/escalas` | Cria escala | gestão |
@@ -194,15 +217,18 @@ Todas as rotas (menos o login) exigem o cabeçalho `Authorization: Bearer <token
 | GET/POST/PUT/DELETE | `/api/pacientes[/:id]` | CRUD de pacientes | leitura: todos · escrita: gestão |
 | GET/POST/PUT/DELETE | `/api/profissionais[/:id]` | CRUD de profissionais | leitura: todos · escrita: gestão |
 | GET | `/api/plantoes` | Lista plantões (técnico: só os dele) | todos |
-| POST | `/api/plantoes/checkin` | Check-in por GPS ou QR Code | dono da escala / gestão |
+| POST | `/api/plantoes/checkin` | Check-in por GPS (calcula a distância até a casa) ou QR Code | dono da escala / gestão |
 | PUT | `/api/plantoes/:id/checkout` | Check-out | dono do plantão / gestão |
 | POST | `/api/prontuarios` | Registra prontuário | dono do plantão / gestão |
 | GET | `/api/prontuarios/paciente/:id` | Histórico do paciente | todos |
 | GET | `/api/pagamentos/relatorio/:mes` | Calcula e grava o fechamento do mês | gestão |
 | PUT | `/api/pagamentos/:id/pagar` | Marca pagamento como pago | gestão |
+| GET | `/api/pagamentos/meus?mes=` | Meus ganhos: resumo do mês + histórico | técnico |
+| GET | `/api/auditoria?limite=` | Últimas ações registradas | gestão |
 
 Os erros sempre voltam no formato `{ "erro": "mensagem" }`, com o status HTTP certo
-(400 dados inválidos, 401 sem login, 403 sem permissão, 404 não encontrado, 409 conflito).
+(400 dados inválidos, 401 sem login, 403 sem permissão, 404 não encontrado, 409 conflito,
+429 muitas tentativas de login).
 
 ## 9. Frontend e componentes
 
@@ -211,11 +237,11 @@ As telas são montadas com componentes reutilizáveis, como o edital pede:
 | Pedido no edital | Componente no projeto |
 |---|---|
 | Navbar | `layout/Navbar` (+ `Sidebar`, `Layout`, `Logo`) |
-| Cards | `ui/Card`, `pacientes/CardPaciente` |
+| Cards | `ui/Card`, `pacientes/CardPaciente`, `dashboard/PainelTecnico`, `dashboard/AlertasOperacao` |
 | Formulários | `ui/Input`, `escalas/FormularioEscala`, `pacientes/FormularioPaciente`, `profissionais/FormularioProfissional`, `prontuario/FormularioProntuario` |
 | Botões | `ui/Button` (variantes primary, outline, danger, ghost…) |
 | Tabelas | `ui/Table`, `escalas/TabelaEscalas`, `profissionais/TabelaProfissionais`, `financeiro/TabelaPagamentos` |
-| Modais | `ui/Modal`, `ui/ModalConfirmacao`, `plantoes/ModalCheckinQr` |
+| Modais | `ui/Modal`, `ui/ModalConfirmacao`, `plantoes/ModalCheckinQr`, `pacientes/ModalQrCode`, `financeiro/ModalDemonstrativo` |
 | Footer | `layout/Footer` |
 
 Também uso contexto (`AuthContext` para o login, `ToastContext` para os avisos) e um serviço
@@ -251,6 +277,12 @@ npm run dev          # site em http://localhost:3000
 
 O guia da publicação na nuvem está em [docs/DEPLOY.md](docs/DEPLOY.md).
 
+### Testes automatizados
+```bash
+cd backend
+npm test        # 12 testes: autenticação, permissões, tratamento de erros e cálculo de distância
+```
+
 ### Usuários de demonstração (senha `123456`)
 | Perfil | E-mail |
 |---|---|
@@ -262,12 +294,11 @@ O guia da publicação na nuvem está em [docs/DEPLOY.md](docs/DEPLOY.md).
 Códigos de QR das residências: `QR-PAC-0001`, `QR-PAC-0002` e `QR-PAC-0003`.
 
 ## 11. Próximos passos
-- ler o QR Code pela câmera do celular (biblioteca `html5-qrcode`);
-- validar a distância entre o GPS do check-in e o endereço do paciente;
-- exportar o fechamento em PDF;
-- troca e recuperação de senha;
-- testes automatizados da API (Jest + Supertest);
-- aplicativo mobile (PWA) para os cuidadores.
+- aplicativo mobile (PWA) para os cuidadores, funcionando também sem internet;
+- recuperação de senha por e-mail;
+- buscar a localização da casa pelo endereço (geocodificação), sem precisar do GPS do gestor;
+- notificações (lembrete do plantão e aviso de pagamento);
+- termo de consentimento do paciente/responsável (LGPD).
 
 ## 12. Autor
 

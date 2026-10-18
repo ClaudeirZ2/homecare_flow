@@ -10,6 +10,9 @@ import Escalas from './pages/Escalas';
 import Plantoes from './pages/Plantoes';
 import Prontuarios from './pages/Prontuarios';
 import Financeiro from './pages/Financeiro';
+import MeusGanhos from './pages/MeusGanhos';
+import MeuPerfil from './pages/MeuPerfil';
+import NaoEncontrada from './pages/NaoEncontrada';
 
 // Componente que protege as páginas: sem login volta para /login.
 // Se a página for só da gestão (somenteGestao) e o usuário for técnico, mando para a Visão Geral.
@@ -31,7 +34,9 @@ export default function App() {
       <Route path="/plantoes" element={<RotaPrivada><Plantoes /></RotaPrivada>} />
       <Route path="/prontuarios" element={<RotaPrivada><Prontuarios /></RotaPrivada>} />
       <Route path="/financeiro" element={<RotaPrivada somenteGestao><Financeiro /></RotaPrivada>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/meus-ganhos" element={<RotaPrivada><MeusGanhos /></RotaPrivada>} />
+      <Route path="/perfil" element={<RotaPrivada><MeuPerfil /></RotaPrivada>} />
+      <Route path="*" element={<RotaPrivada><NaoEncontrada /></RotaPrivada>} />
     </Routes>
   );
 }

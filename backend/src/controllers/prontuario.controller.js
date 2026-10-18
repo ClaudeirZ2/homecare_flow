@@ -1,6 +1,7 @@
 const ProntuarioModel = require('../models/prontuario.model');
 const PlantaoModel = require('../models/plantao.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
+const registrarAuditoria = require('../utils/auditoria');
 
 // Campo numérico opcional: vazio vira null, e valor fora da faixa vira NaN (para eu recusar depois)
 function numeroOpcional(valor, min, max) {
@@ -40,6 +41,7 @@ const ProntuarioController = {
       }
 
       const prontuario = await ProntuarioModel.criar(dados);
+      registrarAuditoria(req, 'registrou', 'prontuario', prontuario.id, `Prontuário do plantão de ${plantao.paciente_nome}`);
       res.status(201).json(prontuario);
     } catch (err) {
       next(err);

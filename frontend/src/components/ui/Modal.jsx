@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 // Janela modal que uso nos formulários e confirmações.
 // Fecha no X, com a tecla Esc ou clicando fora dela.
-export default function Modal({ aberto, titulo, onFechar, children }) {
+export default function Modal({ aberto, titulo, onFechar, children, largura }) {
   useEffect(() => {
     if (!aberto) return undefined;
     const aoTeclar = (e) => { if (e.key === 'Escape') onFechar(); };
@@ -15,7 +15,7 @@ export default function Modal({ aberto, titulo, onFechar, children }) {
 
   return (
     <div className="modal-fundo" onClick={onFechar}>
-      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={titulo}>
+      <div className="modal" style={largura ? { maxWidth: largura } : undefined} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={titulo}>
         <div className="modal-cabecalho">
           <h3 className="modal-titulo">{titulo}</h3>
           <button type="button" className="modal-fechar" aria-label="Fechar" onClick={onFechar}>

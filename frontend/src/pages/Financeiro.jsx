@@ -6,6 +6,7 @@ import PageHeader from '../components/ui/PageHeader';
 import ModalConfirmacao from '../components/ui/ModalConfirmacao';
 import CardResumoFinanceiro from '../components/financeiro/CardResumoFinanceiro';
 import TabelaPagamentos from '../components/financeiro/TabelaPagamentos';
+import ModalDemonstrativo from '../components/financeiro/ModalDemonstrativo';
 import { pagamentoService } from '../services/pagamentoService';
 import { mensagemDeErro } from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -18,6 +19,7 @@ export default function Financeiro() {
   const [relatorio, setRelatorio] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const [pagando, setPagando] = useState(null);
+  const [demonstrativo, setDemonstrativo] = useState(null);
 
   const gerar = useCallback(async () => {
     if (!mes) return;
@@ -68,9 +70,11 @@ export default function Financeiro() {
       {carregando ? <p className="texto-suave">Calculando...</p> : (
         <>
           <CardResumoFinanceiro relatorio={relatorio} />
-          <TabelaPagamentos relatorio={relatorio} onPagar={setPagando} />
+          <TabelaPagamentos relatorio={relatorio} onPagar={setPagando} onDemonstrativo={setDemonstrativo} />
         </>
       )}
+
+      <ModalDemonstrativo pagamento={demonstrativo} onFechar={() => setDemonstrativo(null)} />
 
       <ModalConfirmacao
         aberto={!!pagando}

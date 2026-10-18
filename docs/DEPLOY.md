@@ -106,6 +106,16 @@ Salve. O Render reinicia a API sozinho. Assim só o meu site consegue chamar a A
 
 ---
 
+## Atualizando a versão publicada
+Quando o código novo entra na branch `main`, a Vercel e o Render atualizam sozinhos.
+Se o **schema do banco mudou** (tabelas ou colunas novas), recrie o banco na nuvem:
+```bash
+cd backend
+npm run db:setup:nuvem
+```
+Variável opcional no Render: `RAIO_CHECKIN_M` (padrão 300), a distância máxima aceita no check-in por GPS
+antes de virar alerta.
+
 ## Checklist do dia da apresentação
 - [ ] 5 minutos antes: abrir o link da API para "acordar" o Render.
 - [ ] Abrir o link da Vercel e fazer login como admin.

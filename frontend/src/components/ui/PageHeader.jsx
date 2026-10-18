@@ -1,5 +1,12 @@
+import { useEffect } from 'react';
+
 // Cabeçalho que se repete em todas as páginas: título, subtítulo e botões do lado direito
 export default function PageHeader({ titulo, subtitulo, children }) {
+  // O título da aba do navegador acompanha a página
+  useEffect(() => {
+    document.title = `${titulo} · Home Care Flow`;
+  }, [titulo]);
+
   return (
     <div className="page-header">
       <div>

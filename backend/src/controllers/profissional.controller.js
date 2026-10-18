@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const ProfissionalModel = require('../models/profissional.model');
+const registrarAuditoria = require('../utils/auditoria');
 
 const STATUS_VALIDOS = ['disponivel', 'em_plantao', 'indisponivel'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,6 +59,7 @@ const ProfissionalController = {
 
       const senha_hash = await bcrypt.hash(senha, 10);
       const profissional = await ProfissionalModel.criarComUsuario({ ...dados, senha_hash });
+      registrarAuditoria(req, 'criou', 'profissional', profissional.id, `Cadastrou ${profissional.nome} (${profissional.especialidade || 'sem especialidade'})`);
       res.status(201).json(profissional);
     } catch (err) {
       next(err);
@@ -78,7 +80,9 @@ const ProfissionalController = {
         return res.status(400).json({ erro: 'Status de disponibilidade inválido.' });
       }
 
-      res.json(await ProfissionalModel.atualizar(req.params.id, { ...dados, status_disponibilidade }));
+      const atualizado = await ProfissionalModel.atualizar(req.params.id, { ...dados, status_disponibilidade });
+      registrarAuditoria(req, 'editou', 'profissional', atualizado.id, `Editou o cadastro de ${atualizado.nome}`);
+      res.json(atualizado);
     } catch (err) {
       next(err);
     }
@@ -106,6 +110,7 @@ const ProfissionalController = {
       if (!existente) return res.status(404).json({ erro: 'Profissional não encontrado.' });
 
       await ProfissionalModel.remover(req.params.id);
+      registrarAuditoria(req, 'excluiu', 'profissional', existente.id, `Desativou ${existente.nome}`);
       res.status(204).send();
     } catch (err) {
       next(err);

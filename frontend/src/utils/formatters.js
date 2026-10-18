@@ -12,6 +12,12 @@ export function formatarDataHora(valor) {
   return new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+// Só o horário: '07:00'
+export function formatarHora(valor) {
+  if (!valor) return '—';
+  return new Date(valor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
 export function formatarMoeda(valor) {
   return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -20,6 +26,13 @@ export function formatarMoeda(valor) {
 export function formatarHoras(valor) {
   if (valor === null || valor === undefined) return '—';
   return `${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} h`;
+}
+
+// 85 -> '85 m' · 2450 -> '2,5 km'
+export function formatarDistancia(metros) {
+  if (metros === null || metros === undefined) return '—';
+  if (metros < 1000) return `${metros} m`;
+  return `${(metros / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} km`;
 }
 
 // Data de hoje 'AAAA-MM-DD' no horário local (o toISOString usa UTC e à noite já dava o dia seguinte)

@@ -8,6 +8,7 @@ import Input from '../components/ui/Input';
 import EstadoVazio from '../components/ui/EstadoVazio';
 import CardPaciente from '../components/pacientes/CardPaciente';
 import FormularioPaciente from '../components/pacientes/FormularioPaciente';
+import ModalQrCode from '../components/pacientes/ModalQrCode';
 import { pacienteService } from '../services/pacienteService';
 import { mensagemDeErro } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +26,7 @@ export default function Pacientes() {
   const [modalForm, setModalForm] = useState(false);
   const [editando, setEditando] = useState(null);
   const [excluindo, setExcluindo] = useState(null);
+  const [pacienteQr, setPacienteQr] = useState(null);
 
   const carregar = useCallback(async () => {
     try {
@@ -95,6 +97,7 @@ export default function Pacientes() {
             key={p.id} paciente={p} podeEditar={ehGestao}
             onEditar={(pac) => { setEditando(pac); setModalForm(true); }}
             onExcluir={setExcluindo}
+            onVerQr={setPacienteQr}
           />
         ))}
       </div>
@@ -102,6 +105,8 @@ export default function Pacientes() {
       <Modal aberto={modalForm} titulo={editando ? 'Editar paciente' : 'Novo paciente'} onFechar={() => setModalForm(false)}>
         <FormularioPaciente paciente={editando} salvando={salvando} onSalvar={salvar} onCancelar={() => setModalForm(false)} />
       </Modal>
+
+      <ModalQrCode paciente={pacienteQr} onFechar={() => setPacienteQr(null)} />
 
       <ModalConfirmacao
         aberto={!!excluindo}
