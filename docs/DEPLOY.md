@@ -5,9 +5,13 @@ serviços gratuitos:
 
 | Parte | Serviço | Endereço (exemplo) |
 |---|---|---|
-| Banco MySQL | **Aiven** | `mysql-xxxx.aivencloud.com:12345` |
-| API Node.js | **Render** | `https://homecare-flow-api.onrender.com` |
-| Frontend React | **Vercel** | `https://homecare-flow.vercel.app` |
+| Banco MySQL | **Aiven** | `homecare-flow-db-homecare-flow.h.aivencloud.com` |
+| API Node.js | **Render** | https://homecare-flow.onrender.com |
+| Frontend React | **Vercel** | https://homecare-flow.vercel.app |
+
+> Na prática, criei a API pelo **New → Web Service** (Root Directory `backend`). Uma dica: no "Add from .env"
+> do Render, o certificado precisa estar numa linha só (com `
+` no lugar das quebras de linha).
 
 A ordem importa, porque cada parte precisa do endereço da anterior:
 **banco → API → frontend → voltar na API para liberar o CORS.**

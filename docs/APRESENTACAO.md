@@ -14,6 +14,8 @@ Não precisa decorar.
 
 ---
 
+**Links:** site https://homecare-flow.vercel.app · API https://homecare-flow.onrender.com
+
 ## Antes de começar (checklist)
 - [ ] **5 min antes:** abrir o link da API no navegador para "acordar" o Render.
 - [ ] Abrir o site, já **na tela de login**, com o zoom do navegador em 110% ou 125% para o projetor.

@@ -10,6 +10,12 @@ Gestão de escalas, plantões e pagamentos para equipes de cuidado domiciliar.</
   Projeto Final — Aranduê / Recode Pro AI · MySQL + Node.js + ReactJS
 </p>
 
+<p align="center">
+  🌐 <b>Acesse o sistema:</b> <a href="https://homecare-flow.vercel.app">https://homecare-flow.vercel.app</a><br/>
+  ⚙️ API: <a href="https://homecare-flow.onrender.com">https://homecare-flow.onrender.com</a>
+  · Login de teste: <code>admin@homecareflow.com</code> / <code>123456</code>
+</p>
+
 ---
 
 ## Sumário
@@ -218,7 +224,7 @@ por recurso da API (`services/*Service.js`).
 ## 10. Como rodar
 
 ### Online
-Acesse o link publicado (Vercel). A API gratuita do Render "dorme" depois de 15 minutos parada,
+Acesse **https://homecare-flow.vercel.app**. A API gratuita do Render "dorme" depois de 15 minutos parada,
 então o primeiro acesso pode levar até 1 minuto.
 
 ### No computador (Windows)
