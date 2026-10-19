@@ -83,14 +83,16 @@ INSERT INTO prontuarios (plantao_id, pressao_arterial, frequencia_cardiaca, temp
 -- Equipe fixa: cada linha é "profissional atende paciente em tal turno"
 -- (usada para gerar o histórico e as próximas escalas)
 -- ------------------------------------------------------------
-CREATE TEMPORARY TABLE equipe (profissional_id INT, paciente_id INT, turno VARCHAR(10));
+-- (o MySQL do Aiven exige chave primária em toda tabela, até nas temporárias)
+CREATE TEMPORARY TABLE equipe (profissional_id INT, paciente_id INT, turno VARCHAR(10),
+                               PRIMARY KEY (profissional_id, paciente_id));
 INSERT INTO equipe VALUES
 (1, 1, 'manha'), (2, 2, 'noite'), (3, 3, 'tarde'),
 (4, 4, 'manha'), (5, 5, 'tarde'), (6, 6, 'noite'),
 (7, 7, 'manha'), (4, 8, 'tarde'), (5, 9, 'manha'), (7, 10, 'tarde');
 
 -- Números de 0 a 40 (dias)
-CREATE TEMPORARY TABLE dias (n INT);
+CREATE TEMPORARY TABLE dias (n INT PRIMARY KEY);
 INSERT INTO dias (n) VALUES (0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),(15),(16),(17),(18),(19),(20),
   (21),(22),(23),(24),(25),(26),(27),(28),(29),(30),(31),(32),(33),(34),(35),(36),(37),(38),(39),(40);
 
