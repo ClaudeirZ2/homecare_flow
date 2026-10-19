@@ -13,7 +13,7 @@ import { useToast } from '../context/ToastContext';
 
 // Tela do CRUD de Cuidadores/Profissionais
 export default function Profissionais() {
-  const { ehGestao } = useAuth();
+  const { ehGestao, ehAdmin } = useAuth();
   const toast = useToast();
 
   const [lista, setLista] = useState([]);
@@ -75,7 +75,7 @@ export default function Profissionais() {
       </PageHeader>
 
       <TabelaProfissionais
-        profissionais={lista} carregando={carregando} podeEditar={ehGestao}
+        profissionais={lista} carregando={carregando} podeEditar={ehGestao} podeExcluir={ehAdmin}
         onEditar={(p) => { setEditando(p); setModalForm(true); }}
         onExcluir={setExcluindo}
       />

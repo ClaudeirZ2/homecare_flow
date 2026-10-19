@@ -13,24 +13,27 @@ import { plantaoService } from '../../services/plantaoService';
 import { auditoriaService } from '../../services/auditoriaService';
 import { mensagemDeErro } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { hojeISO } from '../../utils/formatters';
 
 // Painel da gestão: indicadores, gráfico, alertas, agenda e o que aconteceu por último no sistema
 export default function PainelGestao() {
   const toast = useToast();
+  const { ehAdmin } = useAuth();
   const [carregando, setCarregando] = useState(true);
   const [dados, setDados] = useState({ pacientes: [], profissionais: [], escalas: [], plantoes: [], atividades: [] });
 
   useEffect(() => {
     Promise.all([
       pacienteService.listar(), profissionalService.listar(), escalaService.listar(),
-      plantaoService.listar(), auditoriaService.recentes(8),
+      plantaoService.listar(),
+      ehAdmin ? auditoriaService.recentes(8) : Promise.resolve([]), // auditoria é só do admin
     ])
       .then(([pacientes, profissionais, escalas, plantoes, atividades]) =>
         setDados({ pacientes, profissionais, escalas, plantoes, atividades }))
       .catch((err) => toast.erro(mensagemDeErro(err, 'Erro ao carregar o painel.')))
       .finally(() => setCarregando(false));
-  }, [toast]);
+  }, [toast, ehAdmin]);
 
   const hoje = hojeISO();
   const escalasHoje = dados.escalas.filter((e) => e.data_prevista === hoje);
@@ -58,7 +61,7 @@ export default function PainelGestao() {
         <AlertasOperacao plantoes={dados.plantoes} />
       </div>
 
-      <AtividadeRecente atividades={dados.atividades} carregando={carregando} />
+      {ehAdmin && <AtividadeRecente atividades={dados.atividades} carregando={carregando} />}
     </>
   );
 }

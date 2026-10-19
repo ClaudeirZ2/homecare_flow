@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const PacienteModel = require('../models/paciente.model');
 const registrarAuditoria = require('../utils/auditoria');
+const { ehTecnico } = require('../middlewares/auth.middleware');
 
 // Confiro os campos do formulário e já limpo os espaços extras
 function validarPaciente(body) {
@@ -40,8 +41,12 @@ function validarPaciente(body) {
 }
 
 const PacienteController = {
+  // A gestão vê todos; o técnico vê só os pacientes que ele atende
   async listar(req, res, next) {
     try {
+      if (ehTecnico(req)) {
+        return res.json(await PacienteModel.listarDoProfissional(req.usuario.profissional_id || -1));
+      }
       res.json(await PacienteModel.listarTodos());
     } catch (err) {
       next(err);
@@ -52,6 +57,9 @@ const PacienteController = {
     try {
       const paciente = await PacienteModel.buscarPorId(req.params.id);
       if (!paciente) return res.status(404).json({ erro: 'Paciente não encontrado.' });
+      if (ehTecnico(req) && !(await PacienteModel.atendidoPor(paciente.id, req.usuario.profissional_id))) {
+        return res.status(403).json({ erro: 'Você só pode ver os pacientes que atende.' });
+      }
       res.json(paciente);
     } catch (err) {
       next(err);

@@ -4,7 +4,7 @@ import Button from '../ui/Button';
 const iniciais = (nome = '') => nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 // Card de cada paciente com endereço, contato, código do QR e os botões de editar/excluir
-export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir, onVerQr }) {
+export default function CardPaciente({ paciente, podeEditar, podeExcluir, onEditar, onExcluir, onVerQr }) {
   return (
     <article className="card paciente-card">
       <div className="paciente-topo">
@@ -32,7 +32,9 @@ export default function CardPaciente({ paciente, podeEditar, onEditar, onExcluir
           <div className="acoes">
             <Button size="sm" variant="ghost" icone={QrCode} titulo="Ver e imprimir QR Code" onClick={() => onVerQr(paciente)} />
             <Button size="sm" variant="ghost" icone={Pencil} titulo="Editar" onClick={() => onEditar(paciente)} />
-            <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(paciente)} />
+            {podeExcluir && (
+              <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(paciente)} />
+            )}
           </div>
         )}
       </div>

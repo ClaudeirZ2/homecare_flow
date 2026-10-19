@@ -33,12 +33,17 @@ function permitirTipos(...tiposPermitidos) {
   };
 }
 
-// Atalho que eu uso muito nas rotas: só admin e gestor
+// Atalhos de perfil que eu uso nas rotas:
+// - gestão (admin e gestor): cadastros, escalas e financeiro
+// - admin: ações "destrutivas" (excluir/desativar) e auditoria
+// - técnico: ações que só quem está no plantão pode fazer (check-in, check-out, prontuário)
 const somenteGestao = permitirTipos('admin', 'gestor');
+const somenteAdmin = permitirTipos('admin');
+const somenteTecnico = permitirTipos('tecnico');
 
 // Diz se quem está logado é técnico (técnico só pode ver os próprios dados)
 function ehTecnico(req) {
   return req.usuario?.tipo === 'tecnico';
 }
 
-module.exports = { autenticar, permitirTipos, somenteGestao, ehTecnico };
+module.exports = { autenticar, permitirTipos, somenteGestao, somenteAdmin, somenteTecnico, ehTecnico };

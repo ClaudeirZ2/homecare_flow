@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const ProfissionalController = require('../controllers/profissional.controller');
-const { autenticar, somenteGestao } = require('../middlewares/auth.middleware');
+const { autenticar, somenteGestao, somenteAdmin } = require('../middlewares/auth.middleware');
 
-router.use(autenticar);
+// Dados da equipe (e-mail, telefone, valor da hora) são só da gestão: o técnico não acessa
+router.use(autenticar, somenteGestao);
 
-// CRUD completo de Profissionais/Cuidadores (só admin/gestor podem alterar)
+// CRUD completo de Profissionais/Cuidadores (desativar é só para o admin)
 router.get('/', ProfissionalController.listar);
 router.get('/:id', ProfissionalController.detalhar);
-router.post('/', somenteGestao, ProfissionalController.criar);
-router.put('/:id', somenteGestao, ProfissionalController.atualizar);
-router.put('/:id/status', somenteGestao, ProfissionalController.atualizarStatus);
-router.delete('/:id', somenteGestao, ProfissionalController.remover);
+router.post('/', ProfissionalController.criar);
+router.put('/:id', ProfissionalController.atualizar);
+router.put('/:id/status', ProfissionalController.atualizarStatus);
+router.delete('/:id', somenteAdmin, ProfissionalController.remover);
 
 module.exports = router;

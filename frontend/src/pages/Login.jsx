@@ -74,7 +74,8 @@ export default function Login() {
           {(import.meta.env.DEV || import.meta.env.VITE_MOSTRAR_DEMO === 'true') && (
             <div className="login-demo">
               <strong>Ambiente de demonstração</strong> · senha <code>123456</code><br />
-              Gestão: admin@homecareflow.com<br />
+              Admin: admin@homecareflow.com<br />
+              Gestor: carlos@homecareflow.com<br />
               Técnica: juliana@homecareflow.com
             </div>
           )}

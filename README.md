@@ -91,11 +91,20 @@ Quem mais perde com isso é o profissional, que não tem como comprovar as horas
 | **Meu perfil** | Dados da conta e **troca de senha**. | Todos |
 | **App no celular (PWA)** | Pode ser **instalado na tela inicial** do celular, abre em tela cheia, carrega rápido e não fica em branco sem internet. No celular, as tabelas viram cartões fáceis de tocar. | Todos |
 
-**Perfis de acesso:**
-- **Admin/Gestor:** cadastram, montam as escalas e acessam o financeiro.
-- **Técnico:** vê só as escalas e plantões dele.
+**Perfis de acesso (cada pessoa vê só o necessário):**
 
-A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um técnico não acessa dados de outro.
+| Recurso | Admin | Gestor | Técnico / cuidador |
+|---|---|---|---|
+| Pacientes | tudo | cadastra e edita | só **os seus** (dos plantões dele), sem editar |
+| Cuidadores (equipe) | tudo | cadastra e edita | **não vê** (privacidade dos colegas) |
+| Escalas | tudo | tudo | só as suas, sem editar |
+| Check-in / check-out | acompanha | acompanha | **só ele faz**, nos plantões dele (prova de presença) |
+| Prontuário | lê tudo | lê tudo | registra nos plantões dele; lê só dos seus pacientes (LGPD) |
+| Financeiro | ✔ | ✔ | ✖ (vê só **Meus ganhos**) |
+| Excluir / desativar cadastros | ✔ | ✖ | ✖ |
+| Auditoria (atividade recente) | ✔ | ✖ | ✖ |
+
+As regras valem **na API**, e não só na tela: mesmo chamando a API direto, cada perfil recebe 403 no que não pode.
 
 **Segurança e rastreabilidade (LGPD):**
 - senhas com bcrypt e login com JWT;
@@ -112,10 +121,12 @@ A regra vale **na API**, e não só na tela: mesmo chamando a API direto, um té
 | ![Escalas](docs/telas/escalas.png) | ![Plantões](docs/telas/plantoes.png) |
 | **Meu dia (técnica)** | **Meus ganhos (técnica)** |
 | ![Meu dia](docs/telas/meu-dia.png) | ![Meus ganhos](docs/telas/meus-ganhos.png) |
+| **Meus pacientes (técnica)** | **Celular** |
+| ![Meus pacientes](docs/telas/meus-pacientes.png) | ![Celular](docs/telas/celular.png) |
 | **Cartão de QR Code** | **Demonstrativo de pagamento** |
 | ![QR Code](docs/telas/cartao-qr.png) | ![Demonstrativo](docs/telas/demonstrativo.png) |
-| **Financeiro** | **Celular** |
-| ![Financeiro](docs/telas/financeiro.png) | ![Celular](docs/telas/celular.png) |
+| **Financeiro** | |
+| ![Financeiro](docs/telas/financeiro.png) | |
 
 ## 5. Tecnologias
 
@@ -288,10 +299,14 @@ npm test        # 12 testes: autenticação, permissões, tratamento de erros e 
 |---|---|
 | Admin | admin@homecareflow.com |
 | Gestor | carlos@homecareflow.com |
-| Técnica | juliana@homecareflow.com |
-| Técnico | pedro@homecareflow.com |
+| Técnica (atende Antônio Ferreira hoje) | juliana@homecareflow.com |
+| Técnico (plantão noturno hoje) | pedro@homecareflow.com |
+| Outros técnicos e cuidadores | marta@, rafael@, camila@, bruno@, larissa@ (todos @homecareflow.com) |
 
-Códigos de QR das residências: `QR-PAC-0001`, `QR-PAC-0002` e `QR-PAC-0003`.
+Os dados de demonstração têm 10 pacientes, 7 profissionais, cerca de 330 escalas (40 dias de histórico),
+plantões em andamento hoje e o mês passado já fechado e pago.
+
+Códigos de QR das residências: de `QR-PAC-0001` a `QR-PAC-0010`.
 
 ## 11. Próximos passos
 - aplicativo mobile (PWA) para os cuidadores, funcionando também sem internet;

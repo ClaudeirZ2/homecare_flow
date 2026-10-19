@@ -26,7 +26,7 @@ function crud(tag, nome, schema, exemplo) {
         responses: { 200: { description: 'Atualizado' }, ...respostasPadrao },
       },
       delete: {
-        tags: [tag], summary: 'Remove (gestão)', parameters: [idPath],
+        tags: [tag], summary: 'Remove (só admin)', parameters: [idPath],
         responses: { 204: { description: 'Removido' }, 404: { description: 'Não encontrado' }, 409: { description: 'Tem histórico' } },
       },
     },
@@ -37,9 +37,11 @@ module.exports = {
   openapi: '3.0.3',
   info: {
     title: 'Home Care Flow API',
-    version: '2.0.0',
+    version: '2.1.0',
     description:
       'API REST do Home Care Flow: escalas, plantões (check-in/out por GPS ou QR Code), prontuário e pagamentos.\n\n'
+      + '**Perfis:** admin (tudo), gestor (operação, sem excluir) e técnico (só o próprio trabalho: '
+      + 'escalas, plantões, prontuários e pacientes dele).\n\n'
       + '**Como testar:** faça o `POST /auth/login` com `admin@homecareflow.com` / `123456`, copie o `token` '
       + 'e clique em **Authorize** (cadeado) para usar as outras rotas.',
   },
@@ -122,7 +124,7 @@ module.exports = {
     '/plantoes': { get: { tags: ['Plantões'], summary: 'Lista (técnico: só os dele)', responses: { 200: { description: 'OK' } } } },
     '/plantoes/checkin': {
       post: {
-        tags: ['Plantões'], summary: 'Check-in por GPS ou QR Code (só no dia da escala)',
+        tags: ['Plantões'], summary: 'Check-in por GPS ou QR Code (só o técnico da escala, no dia)',
         requestBody: corpo({
           type: 'object',
           properties: {
@@ -135,17 +137,17 @@ module.exports = {
       },
     },
     '/plantoes/{id}/checkout': {
-      put: { tags: ['Plantões'], summary: 'Check-out', parameters: [idPath], responses: { 200: { description: 'Plantão finalizado' }, 409: { description: 'Já finalizado' } } },
+      put: { tags: ['Plantões'], summary: 'Check-out (só o técnico do plantão)', parameters: [idPath], responses: { 200: { description: 'Plantão finalizado' }, 409: { description: 'Já finalizado' } } },
     },
     '/prontuarios': {
       post: {
-        tags: ['Prontuários'], summary: 'Registra prontuário de um plantão',
+        tags: ['Prontuários'], summary: 'Registra prontuário (só o técnico do plantão)',
         requestBody: corpo({ type: 'object', example: { plantao_id: 1, pressao_arterial: '12/8', temperatura: 36.5, observacoes: 'Sem intercorrências' } }),
         responses: { 201: { description: 'Criado' }, ...respostasPadrao },
       },
     },
     '/prontuarios/paciente/{id}': {
-      get: { tags: ['Prontuários'], summary: 'Histórico do paciente', parameters: [idPath], responses: { 200: { description: 'OK' } } },
+      get: { tags: ['Prontuários'], summary: 'Histórico do paciente (técnico: só pacientes que atende)', parameters: [idPath], responses: { 200: { description: 'OK' } } },
     },
     '/pagamentos/relatorio/{mes}': {
       get: {
@@ -166,7 +168,7 @@ module.exports = {
     },
     '/auditoria': {
       get: {
-        tags: ['Auditoria'], summary: 'Últimas ações registradas (gestão)',
+        tags: ['Auditoria'], summary: 'Últimas ações registradas (só admin)',
         parameters: [{ name: 'limite', in: 'query', schema: { type: 'integer', default: 10 } }],
         responses: { 200: { description: 'OK' }, ...respostasPadrao },
       },
