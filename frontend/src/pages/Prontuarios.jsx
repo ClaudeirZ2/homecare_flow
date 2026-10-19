@@ -8,9 +8,11 @@ import { plantaoService } from '../services/plantaoService';
 import { prontuarioService } from '../services/prontuarioService';
 import { mensagemDeErro } from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Prontuarios() {
   const toast = useToast();
+  const { ehGestao } = useAuth();
   const [pacientes, setPacientes] = useState([]);
   const [pacienteId, setPacienteId] = useState('');
   const [registros, setRegistros] = useState([]);
@@ -52,10 +54,16 @@ export default function Prontuarios() {
 
   return (
     <>
-      <PageHeader titulo="Prontuário Digital" subtitulo="Registro padronizado de cada plantão, substituindo anotações em papel." />
-      <FormularioProntuario plantoes={plantoes} salvando={salvando} onSalvar={salvar} />
+      <PageHeader
+        titulo="Prontuário Digital"
+        subtitulo={ehGestao
+          ? 'Consulte o histórico padronizado de cada paciente.'
+          : 'Registro padronizado de cada plantão, substituindo anotações em papel.'}
+      />
+      {/* Quem registra é quem fez o plantão; a gestão só consulta */}
+      {!ehGestao && <FormularioProntuario plantoes={plantoes} salvando={salvando} onSalvar={salvar} />}
 
-      <h2 className="secao-titulo" style={{ marginTop: 32 }}>Histórico do paciente</h2>
+      <h2 className="secao-titulo" style={{ marginTop: ehGestao ? 0 : 32 }}>Histórico do paciente</h2>
       <div className="barra-filtros">
         <Input label="Paciente" name="paciente" value={pacienteId} onChange={(e) => setPacienteId(e.target.value)}
           options={pacientes.map((p) => ({ value: p.id, label: p.nome }))} />

@@ -23,11 +23,16 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   }
 
-  // Admin e gestor cuidam dos cadastros, escalas e financeiro. O técnico faz os plantões.
-  const ehGestao = usuario?.tipo === 'admin' || usuario?.tipo === 'gestor';
+  // Perfis:
+  // - admin: tudo, inclusive excluir/desativar cadastros e ver a auditoria
+  // - gestor: operação (cadastros, escalas, financeiro), sem excluir
+  // - técnico: só o próprio trabalho (escalas, plantões, prontuários e ganhos dele)
+  const ehAdmin = usuario?.tipo === 'admin';
+  const ehGestao = ehAdmin || usuario?.tipo === 'gestor';
+  const ehTecnico = usuario?.tipo === 'tecnico';
 
   return (
-    <AuthContext.Provider value={{ usuario, login, logout, ehGestao }}>
+    <AuthContext.Provider value={{ usuario, login, logout, ehAdmin, ehGestao, ehTecnico }}>
       {children}
     </AuthContext.Provider>
   );

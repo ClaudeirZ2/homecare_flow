@@ -82,6 +82,11 @@ export default function Plantoes() {
     ...(ehGestao ? [{ chave: 'profissional_nome', titulo: 'Profissional' }] : []),
     { chave: 'turno', titulo: 'Turno', render: (e) => rotulo(e.turno) },
     { chave: 'status', titulo: 'Status', render: (e) => <Badge status={e.status} /> },
+  ];
+
+  // Check-in e check-out são a prova de presença: só o próprio técnico faz.
+  // A gestão vê a mesma lista, mas só para acompanhar.
+  if (!ehGestao) colunas.push(
     {
       chave: 'acao', titulo: 'Ação',
       render: (e) => {
@@ -100,13 +105,20 @@ export default function Plantoes() {
         ));
       },
     },
-  ];
+  );
 
   return (
     <>
-      <PageHeader titulo="Plantões" subtitulo="Registre a chegada e a saída com GPS ou QR Code da residência." />
+      <PageHeader
+        titulo="Plantões"
+        subtitulo={ehGestao
+          ? 'Acompanhe as escalas em andamento e o histórico de presença da equipe.'
+          : 'Registre a chegada e a saída com GPS ou QR Code da residência.'}
+      />
 
-      <h2 className="secao-titulo" style={{ marginTop: 0 }}>Escalas para check-in / check-out</h2>
+      <h2 className="secao-titulo" style={{ marginTop: 0 }}>
+        {ehGestao ? 'Escalas de hoje em diante' : 'Escalas para check-in / check-out'}
+      </h2>
       <Table colunas={colunas} dados={pendentes} vazio="Nenhuma escala pendente." />
 
       <h2 className="secao-titulo">Histórico de plantões</h2>

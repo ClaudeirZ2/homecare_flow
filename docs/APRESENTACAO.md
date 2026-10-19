@@ -70,7 +70,10 @@ Não precisa decorar.
 
 ### 3.1 Login como gestora (30 s)
 **Clique:** login com `admin@homecareflow.com` / `123456`.
-> "O sistema tem **perfis de acesso**: administrador e gestor cuidam da operação; o técnico faz os plantões."
+> "O sistema tem **três perfis**, e cada pessoa vê só o que precisa:
+> - o **administrador** vê tudo, inclusive a auditoria;
+> - o **gestor** cuida da operação, mas não exclui cadastros;
+> - o **técnico** vê só o próprio trabalho: os pacientes dele, as escalas dele e os ganhos dele."
 
 ### 3.2 Visão Geral (50 s)
 **Mostre:** os cards, o gráfico, os **pontos de atenção** e a **atividade recente**.
@@ -109,7 +112,9 @@ Não precisa decorar.
 
 ### 3.5 Visão da técnica (1 min 30)
 **Clique:** Sair. Entre com `juliana@homecareflow.com` / `123456`.
-> "Agora eu sou a Juliana, técnica de enfermagem. O painel dela é diferente: o **Meu dia** mostra
+> "Agora eu sou a Juliana, técnica de enfermagem. Reparem que o menu dela é menor: ela **não vê a lista de
+> cuidadores** nem o financeiro da empresa, e em **Meus pacientes** aparecem só os pacientes que ela atende.
+> O painel dela também é diferente: o **Meu dia** mostra
 > o plantão de hoje, as próximas escalas e **quanto ela já tem a receber no mês**.
 > Ela **não vê o financeiro** da empresa, só os ganhos dela."
 
@@ -214,6 +219,12 @@ Se quiser impressionar: abra o site no celular e leia o cartão impresso ou most
 > "No check-in por GPS, a API calcula a distância até a casa do paciente com a fórmula de Haversine.
 > Acima de 300 metros o check-in não é bloqueado, porque o GPS do celular às vezes erra, mas ele
 > vira um **alerta** no painel da gestão. E o QR Code garante a presença: o cartão fica colado na casa."
+
+**"Por que o técnico não vê os outros cuidadores e pacientes?"**
+> "Por privacidade e pela LGPD: cada pessoa vê só o necessário. O técnico não precisa saber o salário dos
+> colegas, nem ler o prontuário de um paciente que ele não atende. E a gestão não faz check-in no lugar
+> do técnico, porque o check-in é a prova de que ele estava na casa. Essas regras estão na API, e eu testei
+> todas elas: são 39 verificações, perfil por perfil."
 
 **"O que é essa auditoria?"**
 > "É uma tabela que guarda quem fez cada ação e quando: login, cadastro, check-in, pagamento.

@@ -58,6 +58,17 @@ Uma requisição passa por estas etapas, nesta ordem:
 - **Exclusão de paciente e profissional:** é **lógica** (`ativo = FALSE`), para não perder o histórico.
   As escalas futuras deles são canceladas, e o profissional desativado perde o acesso.
 - **Técnico** só vê e mexe nas próprias escalas e plantões. A regra está na API, não só na tela.
+- **Técnico** só enxerga os pacientes que atende (e o prontuário deles). Não vê a lista da equipe.
+- **Check-in, check-out e prontuário** só o próprio técnico registra. A gestão acompanha, mas não
+  registra presença "no lugar" de ninguém.
+- **Excluir/desativar** paciente ou cuidador e ver a **auditoria** são ações só do admin.
+
+| Middleware | Quem passa | Onde uso |
+|---|---|---|
+| `autenticar` | qualquer pessoa logada | todas as rotas, menos o login |
+| `somenteGestao` | admin e gestor | cadastros, escalas (escrita), financeiro |
+| `somenteAdmin` | admin | excluir/desativar, auditoria, cadastro de usuários |
+| `somenteTecnico` | técnico | check-in, check-out, prontuário, meus ganhos |
 - **Check-in** só é liberado no dia da escala.
 
 ## Auditoria

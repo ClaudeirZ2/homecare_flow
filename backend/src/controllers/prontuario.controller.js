@@ -1,5 +1,6 @@
 const ProntuarioModel = require('../models/prontuario.model');
 const PlantaoModel = require('../models/plantao.model');
+const PacienteModel = require('../models/paciente.model');
 const { ehTecnico } = require('../middlewares/auth.middleware');
 const registrarAuditoria = require('../utils/auditoria');
 
@@ -49,8 +50,12 @@ const ProntuarioController = {
   },
 
   // GET /api/prontuarios/paciente/:id
+  // Prontuário é dado sensível (LGPD): o técnico só lê o histórico dos pacientes que atende.
   async listarPorPaciente(req, res, next) {
     try {
+      if (ehTecnico(req) && !(await PacienteModel.atendidoPor(req.params.id, req.usuario.profissional_id))) {
+        return res.status(403).json({ erro: 'Você só pode ver o histórico dos pacientes que atende.' });
+      }
       const historico = await ProntuarioModel.listarPorPaciente(req.params.id);
       res.json(historico);
     } catch (err) {

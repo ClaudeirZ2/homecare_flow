@@ -8,6 +8,30 @@ const PacienteModel = {
     return rows;
   },
 
+  // Pacientes que o profissional atende (tem escala com ele que não foi cancelada).
+  // É o que o técnico enxerga: nada de ver a lista inteira de pacientes da empresa.
+  async listarDoProfissional(profissional_id) {
+    const [rows] = await pool.query(
+      `SELECT DISTINCT p.*
+       FROM pacientes p
+       JOIN escalas e ON e.paciente_id = p.id
+       WHERE p.ativo = TRUE AND e.profissional_id = ? AND e.status <> 'cancelado'
+       ORDER BY p.nome ASC`,
+      [profissional_id]
+    );
+    return rows;
+  },
+
+  // true se o profissional tem (ou teve) escala com esse paciente
+  async atendidoPor(paciente_id, profissional_id) {
+    const [rows] = await pool.query(
+      `SELECT 1 FROM escalas
+       WHERE paciente_id = ? AND profissional_id = ? AND status <> 'cancelado' LIMIT 1`,
+      [paciente_id, profissional_id]
+    );
+    return rows.length > 0;
+  },
+
   async buscarPorId(id) {
     const [rows] = await pool.query('SELECT * FROM pacientes WHERE id = ? AND ativo = TRUE', [id]);
     return rows[0];

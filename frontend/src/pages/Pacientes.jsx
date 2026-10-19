@@ -16,7 +16,7 @@ import { useToast } from '../context/ToastContext';
 
 // Tela do CRUD de Pacientes, com busca por nome
 export default function Pacientes() {
-  const { ehGestao } = useAuth();
+  const { ehGestao, ehAdmin } = useAuth();
   const toast = useToast();
 
   const [pacientes, setPacientes] = useState([]);
@@ -77,7 +77,12 @@ export default function Pacientes() {
 
   return (
     <>
-      <PageHeader titulo="Pacientes" subtitulo={`${pacientes.length} pacientes ativos em atendimento domiciliar.`}>
+      <PageHeader
+        titulo={ehGestao ? 'Pacientes' : 'Meus pacientes'}
+        subtitulo={ehGestao
+          ? `${pacientes.length} pacientes ativos em atendimento domiciliar.`
+          : 'Pacientes que você atende: endereço e contato do responsável.'}
+      >
         {ehGestao && <Button icone={Plus} onClick={() => { setEditando(null); setModalForm(true); }}>Novo paciente</Button>}
       </PageHeader>
 
@@ -94,7 +99,7 @@ export default function Pacientes() {
       <div className="grid-pacientes">
         {filtrados.map((p) => (
           <CardPaciente
-            key={p.id} paciente={p} podeEditar={ehGestao}
+            key={p.id} paciente={p} podeEditar={ehGestao} podeExcluir={ehAdmin}
             onEditar={(pac) => { setEditando(pac); setModalForm(true); }}
             onExcluir={setExcluindo}
             onVerQr={setPacienteQr}

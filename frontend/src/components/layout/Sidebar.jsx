@@ -6,17 +6,19 @@ import { useAuth } from '../../context/AuthContext';
 import BotaoInstalar from './BotaoInstalar';
 
 // Itens do menu separados por seção.
-// A seção com somenteGestao (Relatórios) não aparece para o técnico.
+// somenteGestao / somenteTecnico (na seção ou no item) escondem o que o perfil não usa.
+// rotuloTecnico: nome diferente do item quando quem está logado é técnico.
 const SECOES = [
   {
     titulo: 'Geral',
-    itens: [{ para: '/', rotulo: 'Visão Geral', icone: LayoutDashboard }],
+    itens: [{ para: '/', rotulo: 'Visão Geral', rotuloTecnico: 'Meu dia', icone: LayoutDashboard }],
   },
   {
     titulo: 'Cadastros',
+    tituloTecnico: 'Atendimento',
     itens: [
-      { para: '/pacientes', rotulo: 'Pacientes', icone: Users },
-      { para: '/profissionais', rotulo: 'Cuidadores', icone: UserRound },
+      { para: '/pacientes', rotulo: 'Pacientes', rotuloTecnico: 'Meus pacientes', icone: Users },
+      { para: '/profissionais', rotulo: 'Cuidadores', icone: UserRound, somenteGestao: true },
     ],
   },
   {
@@ -45,14 +47,14 @@ const SECOES = [
 
 export default function Sidebar({ aberta, onNavegar }) {
   const { ehGestao } = useAuth();
+  const podeVer = (x) => (!x.somenteGestao || ehGestao) && (!x.somenteTecnico || !ehGestao);
 
   return (
     <nav className={`sidebar ${aberta ? 'sidebar-aberta' : ''}`} aria-label="Menu principal">
-      {SECOES.filter((s) => (!s.somenteGestao || ehGestao) && (!s.somenteTecnico || !ehGestao)).map((secao) => (
+      {SECOES.filter(podeVer).map((secao) => (
         <div key={secao.titulo}>
-          <p className="sidebar-secao">{secao.titulo}</p>
-          {secao.itens.map(({ para, rotulo, icone: Icone }) => (
-            // Para o técnico, a página inicial se chama "Meu dia"
+          <p className="sidebar-secao">{!ehGestao && secao.tituloTecnico ? secao.tituloTecnico : secao.titulo}</p>
+          {secao.itens.filter(podeVer).map(({ para, rotulo, rotuloTecnico, icone: Icone }) => (
             <NavLink
               key={para}
               to={para}
@@ -60,7 +62,7 @@ export default function Sidebar({ aberta, onNavegar }) {
               onClick={onNavegar}
               className={({ isActive }) => `sidebar-link ${isActive ? 'ativo' : ''}`}
             >
-              <Icone size={18} strokeWidth={1.9} /> {para === '/' && !ehGestao ? 'Meu dia' : rotulo}
+              <Icone size={18} strokeWidth={1.9} /> {!ehGestao && rotuloTecnico ? rotuloTecnico : rotulo}
             </NavLink>
           ))}
         </div>

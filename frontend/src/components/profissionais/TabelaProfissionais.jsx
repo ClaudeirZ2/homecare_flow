@@ -4,7 +4,7 @@ import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { formatarMoeda } from '../../utils/formatters';
 
-export default function TabelaProfissionais({ profissionais, carregando, podeEditar, onEditar, onExcluir }) {
+export default function TabelaProfissionais({ profissionais, carregando, podeEditar, podeExcluir, onEditar, onExcluir }) {
   const colunas = [
     {
       chave: 'nome', titulo: 'Profissional',
@@ -27,7 +27,9 @@ export default function TabelaProfissionais({ profissionais, carregando, podeEdi
       render: (p) => (
         <div className="acoes" style={{ justifyContent: 'flex-end' }}>
           <Button size="sm" variant="ghost" icone={Pencil} titulo="Editar" onClick={() => onEditar(p)} />
-          <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(p)} />
+          {podeExcluir && (
+            <Button size="sm" variant="ghost-danger" icone={Trash2} titulo="Excluir" onClick={() => onExcluir(p)} />
+          )}
         </div>
       ),
     });
