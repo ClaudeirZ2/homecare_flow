@@ -159,6 +159,8 @@ As regras valem **na API**, e não só na tela: mesmo chamando a API direto, cad
   - `services` concentram as chamadas à API.
 
 Mais detalhes em [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
+O guia da apresentação, organizado item por item conforme o documento do Projeto Final, está em
+[docs/Guia-Apresentacao-HomeCareFlow.pdf](docs/Guia-Apresentacao-HomeCareFlow.pdf).
 
 ```
 homecare-flow/
