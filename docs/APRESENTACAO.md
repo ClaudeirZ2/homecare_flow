@@ -27,7 +27,7 @@ Não precisa decorar.
 
 ## 1. Abertura e problema (1 min 30)
 
-> "Boa tarde! Meu nome é **[seu nome]** e o meu projeto é o **Home Care Flow**: tecnologia e cuidado em harmonia."
+> "Boa tarde! Meu nome é **Claudeir dos Santos** e o meu projeto é o **Home Care Flow**: tecnologia e cuidado em harmonia."
 
 > "Para começar, uma pergunta: vocês já pensaram em como funciona o dia a dia de um **cuidador** ou
 > **técnico de enfermagem** que atende pacientes em casa?"

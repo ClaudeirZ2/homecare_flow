@@ -160,7 +160,9 @@ As regras valem **na API**, e não só na tela: mesmo chamando a API direto, cad
 
 Mais detalhes em [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 O guia da apresentação, organizado item por item conforme o documento do Projeto Final, está em
-[docs/Guia-Apresentacao-HomeCareFlow.pdf](docs/Guia-Apresentacao-HomeCareFlow.pdf).
+[docs/Guia-Apresentacao-HomeCareFlow.pdf](docs/Guia-Apresentacao-HomeCareFlow.pdf),
+e os slides da apresentação (com as falas nas anotações) estão em
+[docs/HomeCareFlow-Apresentacao.pptx](docs/HomeCareFlow-Apresentacao.pptx).
 
 ```
 homecare-flow/
@@ -319,7 +321,7 @@ Códigos de QR das residências: de `QR-PAC-0001` a `QR-PAC-0010`.
 
 ## 12. Autor
 
-Desenvolvido por **[seu nome completo]** — GitHub [@ClaudeirZ2](https://github.com/ClaudeirZ2)
+Desenvolvido por **Claudeir dos Santos** — GitHub [@ClaudeirZ2](https://github.com/ClaudeirZ2)
 no Projeto Final da formação **Recode Pro AI — Aranduê**.
 
 **Sobre o uso de IA:** usei o Claude (Anthropic) como assistente de programação, para tirar
